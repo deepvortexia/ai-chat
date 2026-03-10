@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import HubHeader from "@/components/HubHeader";
 import { createClient } from "@/lib/supabase/client";
 
-// ── Model definitions ──────────────────────────────────────────────────────
+const FREE_TRIAL_LIMIT = 5;
+
 const MODELS = [
   {
     id: "gpt-5",
@@ -13,7 +14,7 @@ const MODELS = [
     replicateId: "openai/gpt-5",
     icon: "◆",
     skill: "Ultimate Reasoning & Creativity",
-    badge: "State of the Art",
+    subNote: "Included in subscription",
     color: "#f97316",
     gradient: "linear-gradient(135deg,#f97316,#ea580c)",
   },
@@ -24,7 +25,7 @@ const MODELS = [
     replicateId: "anthropic/claude-sonnet-4-5",
     icon: "✦",
     skill: "Nuanced Writing & Analysis",
-    badge: "Advanced Reasoning",
+    subNote: "Included in subscription",
     color: "#a855f7",
     gradient: "linear-gradient(135deg,#a855f7,#7c3aed)",
   },
@@ -35,7 +36,7 @@ const MODELS = [
     replicateId: "google/gemini-2.5-flash",
     icon: "⚡",
     skill: "Lightning Fast · 1M Context",
-    badge: "Multimodal",
+    subNote: "Included in subscription",
     color: "#06b6d4",
     gradient: "linear-gradient(135deg,#06b6d4,#0284c7)",
   },
@@ -46,7 +47,7 @@ const MODELS = [
     replicateId: "deepseek-ai/deepseek-v3",
     icon: "🧠",
     skill: "Coding & Logic Master",
-    badge: "Cost-Efficient",
+    subNote: "Included in subscription",
     color: "#10b981",
     gradient: "linear-gradient(135deg,#10b981,#059669)",
   },
@@ -55,39 +56,52 @@ const MODELS = [
 type ModelId = (typeof MODELS)[number]["id"];
 interface Message { role: "user" | "assistant"; content: string; }
 
-// ── Page ───────────────────────────────────────────────────────────────────
 export default function ChatPage() {
   const supabase = createClient();
 
-  const [selectedModel, setSelectedModel] = useState<ModelId>("gpt-5");
-  const [credits, setCredits]             = useState<number | null>(null);
-  const [messages, setMessages]           = useState<Message[]>([]);
-  const [streamContent, setStreamContent] = useState("");
-  const [input, setInput]                 = useState("");
-  const [loading, setLoading]             = useState(false);
-  const [error, setError]                 = useState<string | null>(null);
+  const [selectedModel, setSelectedModel]   = useState<ModelId>("gpt-5");
+  const [isSubscribed, setIsSubscribed]     = useState(false);
+  const [messageCount, setMessageCount]     = useState(0);
+  const [messages, setMessages]             = useState<Message[]>([]);
+  const [streamContent, setStreamContent]   = useState("");
+  const [input, setInput]                   = useState("");
+  const [loading, setLoading]               = useState(false);
+  const [error, setError]                   = useState<string | null>(null);
+  const [showPaywall, setShowPaywall]       = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef  = useRef<AbortController | null>(null);
   const model = MODELS.find((m) => m.id === selectedModel)!;
 
+  const trialRemaining = Math.max(0, FREE_TRIAL_LIMIT - messageCount);
+  const onFreeTrial    = !isSubscribed;
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streamContent]);
 
-  // Real-time credits refresh after each message
-  const refreshCredits = useCallback(async () => {
+  // Refresh subscription status after each message
+  const refreshStatus = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const { data } = await supabase
       .from("profiles")
-      .select("credits")
+      .select("is_subscribed, message_count")
       .eq("id", user.id)
       .single();
-    if (data) setCredits(data.credits ?? 0);
+    if (data) {
+      setIsSubscribed(data.is_subscribed ?? false);
+      setMessageCount(data.message_count ?? 0);
+    }
   }, [supabase]);
 
-  // ── Send ───────────────────────────────────────────────────────────────
+  async function startCheckout() {
+    const res = await fetch("/api/stripe/checkout", { method: "POST" });
+    const { url, error: err } = await res.json();
+    if (err) { setError(err); return; }
+    if (url) window.location.href = url;
+  }
+
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || loading) return;
@@ -112,8 +126,9 @@ export default function ChatPage() {
       });
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError((data as { error?: string }).error ?? "Something went wrong.");
+        const data = await res.json().catch(() => ({})) as { error?: string; paywall?: boolean };
+        if (data.paywall) { setShowPaywall(true); setMessages((p) => p.slice(0, -1)); }
+        else setError(data.error ?? "Something went wrong.");
         return;
       }
 
@@ -138,7 +153,7 @@ export default function ChatPage() {
       }
 
       if (acc) setMessages((prev) => [...prev, { role: "assistant", content: acc }]);
-      await refreshCredits();
+      await refreshStatus();
     } catch (err: unknown) {
       if (err instanceof Error && err.name !== "AbortError") {
         setError("Network error. Please try again.");
@@ -152,15 +167,16 @@ export default function ChatPage() {
 
   return (
     <div className="page-wrap">
-      {/* Hub-identical header */}
-      <HubHeader onCreditsChange={setCredits} />
+      <HubHeader onStatusChange={(sub, count) => { setIsSubscribed(sub); setMessageCount(count); }} />
 
-      {/* Credits sync indicator */}
-      {credits !== null && (
-        <p style={{ textAlign: "center", fontSize: "0.7rem", color: "var(--text-muted)", marginBottom: "0.8rem" }}>
-          {credits} credit{credits !== 1 ? "s" : ""} remaining · 1 credit per message
-        </p>
-      )}
+      {/* Status bar */}
+      <p style={{ textAlign: "center", fontSize: "0.7rem", color: "var(--text-muted)", marginBottom: "0.8rem" }}>
+        {isSubscribed
+          ? "✦ Unlimited chat — subscription active"
+          : trialRemaining > 0
+            ? `🎁 Free trial — ${trialRemaining} message${trialRemaining !== 1 ? "s" : ""} remaining`
+            : "Free trial ended · subscribe for unlimited access"}
+      </p>
 
       {/* ── Model Tabs ────────────────────────────────────────────────── */}
       <p className="section-label">Select Model</p>
@@ -172,7 +188,7 @@ export default function ChatPage() {
               key={m.id}
               className={`model-tab${active ? " selected" : ""}`}
               style={active ? ({ borderColor: m.color } as React.CSSProperties) : undefined}
-              onClick={() => { setSelectedModel(m.id); setMessages([]); setError(null); }}
+              onClick={() => { setSelectedModel(m.id); setMessages([]); setError(null); setShowPaywall(false); }}
             >
               <span className="tab-glow" style={{ background: m.gradient, position: "absolute", inset: 0, opacity: active ? 0.07 : 0, pointerEvents: "none" }} />
               <span className="tab-icon">{m.icon}</span>
@@ -180,12 +196,46 @@ export default function ChatPage() {
               <p className="tab-skill">{m.skill}</p>
               <span className="tab-badge" style={{ color: m.color, borderColor: m.color }}>
                 {active && <span className="selected-dot" />}
-                {active ? "Active" : m.badge}
+                {active ? "Active" : m.subNote}
               </span>
             </button>
           );
         })}
       </div>
+
+      {/* ── Paywall banner ────────────────────────────────────────────── */}
+      {showPaywall && (
+        <div style={{
+          maxWidth: 900, margin: "0 auto 1rem", padding: "0 1rem",
+        }}>
+          <div style={{
+            background: "rgba(212,175,55,0.06)",
+            border: "1px solid rgba(212,175,55,0.35)",
+            borderRadius: 14, padding: "1.2rem 1.5rem",
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap",
+          }}>
+            <div>
+              <p style={{ fontFamily: "Orbitron, sans-serif", fontSize: "0.85rem", fontWeight: 700, color: "var(--light-gold)", marginBottom: "0.25rem" }}>
+                Free trial complete
+              </p>
+              <p style={{ fontSize: "0.8rem", color: "var(--text-dim)" }}>
+                You&apos;ve used all 5 free messages. Subscribe for unlimited access to all 4 models.
+              </p>
+            </div>
+            <button
+              onClick={startCheckout}
+              style={{
+                padding: "0.6rem 1.4rem", borderRadius: 50,
+                background: "linear-gradient(135deg,#B8860B,#D4AF37)",
+                border: "none", color: "#0a0a0a",
+                fontWeight: 700, fontSize: "0.88rem", cursor: "pointer", whiteSpace: "nowrap",
+              }}
+            >
+              ⚡ Get Unlimited — $6.99/mo
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Chat ──────────────────────────────────────────────────────── */}
       <div className="chat-wrap">
@@ -197,15 +247,18 @@ export default function ChatPage() {
                 Start a conversation with{" "}
                 <strong style={{ color: model.color }}>{model.name}</strong>
               </span>
+              {onFreeTrial && trialRemaining > 0 && (
+                <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.3rem" }}>
+                  {trialRemaining} free message{trialRemaining !== 1 ? "s" : ""} remaining
+                </span>
+              )}
             </div>
           ) : (
             <>
               {messages.map((msg, i) => (
                 <div key={i} className={`msg-row ${msg.role}`}>
                   {msg.role === "assistant" && (
-                    <div className="msg-avatar" style={{ background: model.gradient }}>
-                      {model.icon}
-                    </div>
+                    <div className="msg-avatar" style={{ background: model.gradient }}>{model.icon}</div>
                   )}
                   <div className={`msg-bubble ${msg.role}`}>{msg.content}</div>
                 </div>
@@ -213,27 +266,22 @@ export default function ChatPage() {
 
               {loading && (
                 <div className="msg-row assistant">
-                  <div className="msg-avatar" style={{ background: model.gradient }}>
-                    {model.icon}
-                  </div>
+                  <div className="msg-avatar" style={{ background: model.gradient }}>{model.icon}</div>
                   <div className="msg-bubble assistant">
-                    {streamContent ? (
-                      <>{streamContent}<span className="cursor-blink" /></>
-                    ) : (
-                      <div className="typing-dots"><span /><span /><span /></div>
-                    )}
+                    {streamContent
+                      ? <>{streamContent}<span className="cursor-blink" /></>
+                      : <div className="typing-dots"><span /><span /><span /></div>}
                   </div>
                 </div>
               )}
             </>
           )}
 
-          {error && (
+          {error && !showPaywall && (
             <div className="chat-error">
               {error}
-              {(error.toLowerCase().includes("credit") ||
-                error.toLowerCase().includes("subscri")) && (
-                <a href="https://deepvortexai.art/#pricing">Buy Credits →</a>
+              {error.toLowerCase().includes("subscri") && (
+                <a onClick={startCheckout} style={{ cursor: "pointer" }}>Subscribe →</a>
               )}
             </div>
           )}
@@ -248,32 +296,25 @@ export default function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage(e as unknown as React.FormEvent);
-                }
+                if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(e as unknown as React.FormEvent); }
               }}
               placeholder={`Message ${model.name}…`}
               rows={1}
-              disabled={loading}
+              disabled={loading || showPaywall}
               style={{ fieldSizing: "content" } as React.CSSProperties}
             />
             {loading ? (
-              <button type="button" className="stop-btn" onClick={() => abortRef.current?.abort()}>
-                Stop
-              </button>
+              <button type="button" className="stop-btn" onClick={() => abortRef.current?.abort()}>Stop</button>
             ) : (
-              <button
-                type="submit"
-                className="send-btn"
-                disabled={!input.trim()}
-                style={{ background: model.gradient }}
-              >
+              <button type="submit" className="send-btn" disabled={!input.trim() || showPaywall} style={{ background: model.gradient }}>
                 Send
               </button>
             )}
           </form>
-          <p className="input-hint">Shift+Enter for new line · 1 credit per message</p>
+          <p className="input-hint">
+            Shift+Enter for new line ·{" "}
+            {isSubscribed ? "Unlimited chat for subscribers" : `${trialRemaining} free message${trialRemaining !== 1 ? "s" : ""} remaining`}
+          </p>
         </div>
       </div>
     </div>

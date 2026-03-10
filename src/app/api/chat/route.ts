@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { AI_MODELS, formatMessagesAsPrompt } from "@/lib/models";
 
+const FREE_TRIAL_LIMIT = 5;
 const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN! });
 
 export async function POST(req: NextRequest) {
@@ -18,17 +19,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Sign in to start chatting." }, { status: 401 });
   }
 
-  // ── Credits gate ──────────────────────────────────────────────────────────
+  // ── Subscription / free-trial gate ────────────────────────────────────────
   const svc = await createServiceClient();
   const { data: profile } = await svc
     .from("profiles")
-    .select("credits")
+    .select("is_subscribed, message_count")
     .eq("id", user.id)
     .single();
 
-  if (!profile || profile.credits < 1) {
+  const isSubscribed  = profile?.is_subscribed ?? false;
+  const messageCount  = profile?.message_count ?? 0;
+  const onFreeTrial   = !isSubscribed && messageCount < FREE_TRIAL_LIMIT;
+
+  if (!isSubscribed && !onFreeTrial) {
     return NextResponse.json(
-      { error: "Not enough credits. Purchase more to keep chatting." },
+      {
+        error: `Free trial ended (${FREE_TRIAL_LIMIT} messages used). Subscribe for unlimited access.`,
+        paywall: true,
+      },
       { status: 403 }
     );
   }
@@ -40,16 +48,14 @@ export async function POST(req: NextRequest) {
   };
 
   const model = AI_MODELS[modelId];
-  if (!model) {
-    return NextResponse.json({ error: "Invalid model." }, { status: 400 });
-  }
+  if (!model) return NextResponse.json({ error: "Invalid model." }, { status: 400 });
 
-  const prompt = formatMessagesAsPrompt(messages);
+  const prompt       = formatMessagesAsPrompt(messages);
   const systemPrompt = `You are ${model.name}. ${model.tagline} Be helpful, concise and direct.`;
 
   // ── Replicate streaming ───────────────────────────────────────────────────
-  const encoder = new TextEncoder();
-  let credited  = false;
+  const encoder  = new TextEncoder();
+  let   tracked  = false;
 
   const readable = new ReadableStream({
     async start(controller) {
@@ -65,10 +71,10 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
         }
 
-        // Deduct 1 credit on successful stream completion
-        if (!credited) {
-          credited = true;
-          await svc.rpc("decrement_credits", { user_id: user.id });
+        // Increment message_count on success (tracks trial + usage analytics)
+        if (!tracked) {
+          tracked = true;
+          await svc.rpc("increment_message_count", { user_id: user.id });
         }
 
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));

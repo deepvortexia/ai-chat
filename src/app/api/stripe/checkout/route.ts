@@ -8,15 +8,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const origin = req.headers.get("origin") ?? "http://localhost:3000";
+  const origin = req.headers.get("origin") ?? "https://chat.deepvortexai.art";
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
@@ -24,15 +22,13 @@ export async function POST(req: NextRequest) {
     customer_email: user.email,
     line_items: [
       {
-        price: process.env.STRIPE_PRICE_ID!, // price_1T9FPBPRCOojlkAvLxiTHuVa
+        price: process.env.STRIPE_PRICE_ID!, // $6.99/mo recurring
         quantity: 1,
       },
     ],
-    metadata: {
-      user_id: user.id,
-    },
-    success_url: `${origin}/chat/gemini-flash?subscribed=true`,
-    cancel_url: `${origin}/pricing?canceled=true`,
+    metadata: { user_id: user.id },
+    success_url: `${origin}/?subscribed=true`,
+    cancel_url:  `${origin}/?canceled=true`,
   });
 
   return NextResponse.json({ url: session.url });

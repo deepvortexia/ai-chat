@@ -9,45 +9,33 @@ interface Profile {
   email: string | null;
   full_name: string | null;
   avatar_url: string | null;
-  credits: number;
+  is_subscribed: boolean;
+  message_count: number;
 }
 
 interface Props {
-  /** Called after a successful sign-in so parent can refresh credits display */
-  onCreditsChange?: (credits: number) => void;
+  onStatusChange?: (isSubscribed: boolean, messageCount: number) => void;
 }
 
-export default function HubHeader({ onCreditsChange }: Props) {
+export default function HubHeader({ onStatusChange }: Props) {
   const supabase = createClient();
-  const [user, setUser]       = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [user, setUser]         = useState<User | null>(null);
+  const [profile, setProfile]   = useState<Profile | null>(null);
   const [showAuth, setShowAuth] = useState(false);
-  const [email, setEmail]     = useState("");
+  const [email, setEmail]       = useState("");
   const [authStep, setAuthStep] = useState<"form" | "sent">("form");
-  const [authMsg, setAuthMsg] = useState("");
-  const [sending, setSending] = useState(false);
+  const [authMsg, setAuthMsg]   = useState("");
+  const [sending, setSending]   = useState(false);
   const fetchingRef = useRef(false);
 
-  // ── Auth state ──────────────────────────────────────────────────────────
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) {
-        setUser(data.session.user);
-        loadProfile(data.session.user.id);
-      }
+      if (data.session?.user) { setUser(data.session.user); loadProfile(data.session.user.id); }
     });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session?.user) {
-          setUser(session.user);
-          loadProfile(session.user.id);
-        } else {
-          setUser(null);
-          setProfile(null);
-        }
-      }
-    );
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (session?.user) { setUser(session.user); loadProfile(session.user.id); }
+      else { setUser(null); setProfile(null); }
+    });
     return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -58,73 +46,59 @@ export default function HubHeader({ onCreditsChange }: Props) {
     try {
       const { data } = await supabase
         .from("profiles")
-        .select("id, email, full_name, avatar_url, credits")
+        .select("id, email, full_name, avatar_url, is_subscribed, message_count")
         .eq("id", userId)
         .single();
       if (data) {
         setProfile(data as Profile);
-        onCreditsChange?.(data.credits ?? 0);
+        onStatusChange?.(data.is_subscribed ?? false, data.message_count ?? 0);
       }
-    } finally {
-      fetchingRef.current = false;
-    }
+    } finally { fetchingRef.current = false; }
+  }
+
+  async function startCheckout() {
+    if (!user) { setShowAuth(true); return; }
+    const res = await fetch("/api/stripe/checkout", { method: "POST" });
+    const { url } = await res.json();
+    if (url) window.location.href = url;
   }
 
   async function handleGoogleSignIn() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: { prompt: "select_account" },
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback`, queryParams: { prompt: "select_account" } },
     });
   }
 
   async function handleMagicLink(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
-    setSending(true);
-    setAuthMsg("");
+    setSending(true); setAuthMsg("");
     const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      email, options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
     setSending(false);
-    if (error) { setAuthMsg(error.message); }
-    else        { setAuthStep("sent"); }
+    if (error) setAuthMsg(error.message);
+    else       setAuthStep("sent");
   }
 
   async function handleSignOut() {
     await supabase.auth.signOut();
-    setUser(null);
-    setProfile(null);
+    setUser(null); setProfile(null);
   }
 
-  // ── Helpers ─────────────────────────────────────────────────────────────
-  const displayName = profile?.full_name?.split(" ")[0] ??
-    user?.email?.split("@")[0] ?? "User";
-  const initials = displayName.slice(0, 2).toUpperCase();
-  const avatarUrl = profile?.avatar_url ?? user?.user_metadata?.avatar_url ?? null;
-  const credits   = profile?.credits ?? 0;
+  const displayName = profile?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "User";
+  const initials    = displayName.slice(0, 2).toUpperCase();
+  const avatarUrl   = profile?.avatar_url ?? user?.user_metadata?.avatar_url ?? null;
+  const isSubscribed = profile?.is_subscribed ?? false;
 
   return (
     <>
-      {/* ── Floating particles ─────────────────────────────────────────── */}
       {[...Array(6)].map((_, i) => (
-        <span
-          key={i}
-          className="particle-dot"
-          style={{
-            left: `${10 + i * 15}%`,
-            animationDelay: `${i * 1.3}s`,
-            animationDuration: `${7 + i}s`,
-          }}
-        />
+        <span key={i} className="particle-dot" style={{ left: `${10 + i * 15}%`, animationDelay: `${i * 1.3}s`, animationDuration: `${7 + i}s` }} />
       ))}
 
-      {/* ── Header ────────────────────────────────────────────────────── */}
       <header className="hub-header">
-        {/* Logo */}
         <div className="logo-zone">
           <span className="orbit-ring orbit-ring-1" />
           <span className="orbit-ring orbit-ring-2" />
@@ -135,32 +109,42 @@ export default function HubHeader({ onCreditsChange }: Props) {
 
         <h1 className="hub-title">DΞΞP VORTΞX AI</h1>
         <p className="hub-subtitle">AI Chat Suite</p>
-        <p className="hub-tagline">4 frontier models · one interface</p>
+        <p className="hub-tagline">4 frontier models · one subscription</p>
 
-        {/* Pills */}
         <div className="pills-row">
           <a href="https://deepvortexai.art" className="hub-pill clickable" style={{ textDecoration: "none" }}>
-            <span className="pill-icon">🏠</span>
-            <span>Hub</span>
+            <span className="pill-icon">🏠</span><span>Hub</span>
           </a>
 
+          {/* Status pill */}
           {user ? (
-            <div className="hub-pill credits-pill">
-              <span className="pill-icon">🏆</span>
-              <span>{credits} credits</span>
-            </div>
+            isSubscribed ? (
+              <div className="hub-pill credits-pill">
+                <span className="pill-icon">✦</span>
+                <span>Unlimited Access</span>
+              </div>
+            ) : (
+              <div className="hub-pill" style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--text-dim)" }}>
+                <span className="pill-icon">🎁</span>
+                <span>5 free messages</span>
+              </div>
+            )
           ) : (
             <button className="hub-pill credits-pill clickable" onClick={() => setShowAuth(true)}>
-              <span className="pill-icon">🏆</span>
-              <span>Sign in — get 2 free credits</span>
+              <span className="pill-icon">🎁</span>
+              <span>Sign in — 5 free messages</span>
             </button>
           )}
 
-          <a href="https://deepvortexai.art/#pricing" className="hub-pill buy-pill" style={{ textDecoration: "none" }}>
-            <span className="pill-icon">💳</span>
-            <span>Buy Credits</span>
-          </a>
+          {/* Subscribe CTA */}
+          {!isSubscribed && (
+            <button className="hub-pill buy-pill" onClick={startCheckout}>
+              <span className="pill-icon">⚡</span>
+              <span>Get Unlimited Access — $6.99/mo</span>
+            </button>
+          )}
 
+          {/* Profile / Sign In */}
           {user ? (
             <div className="hub-pill profile-pill">
               {avatarUrl ? (
@@ -175,42 +159,29 @@ export default function HubHeader({ onCreditsChange }: Props) {
               <button className="signout-btn" onClick={handleSignOut}>Sign Out</button>
             </div>
           ) : (
-            <button className="hub-pill clickable signin-pill" onClick={() => setShowAuth(true)}>
-              <span className="pill-icon">🔐</span>
-              <span>Sign In</span>
+            <button className="hub-pill clickable" onClick={() => setShowAuth(true)}>
+              <span className="pill-icon">🔐</span><span>Sign In</span>
             </button>
           )}
         </div>
       </header>
 
-      {/* ── Auth Modal ────────────────────────────────────────────────── */}
       {showAuth && (
         <div className="modal-overlay" onClick={() => setShowAuth(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setShowAuth(false)}>✕</button>
-
             {authStep === "form" ? (
               <>
                 <p className="modal-title">Welcome to Deep Vortex AI</p>
-                <p className="modal-subtitle">Sign in to start chatting with frontier models</p>
-
+                <p className="modal-subtitle">Sign in to get 5 free messages, then subscribe for unlimited access</p>
                 <button className="google-btn" onClick={handleGoogleSignIn}>
                   <span>🔐</span> Continue with Google
                 </button>
-
                 <div className="divider"><span>or</span></div>
-
                 <form onSubmit={handleMagicLink}>
-                  <input
-                    type="email" placeholder="your@email.com"
-                    value={email} onChange={(e) => setEmail(e.target.value)}
-                    className="email-input" required
-                  />
-                  <button type="submit" className="magic-btn" disabled={sending}>
-                    {sending ? "Sending…" : "Send Magic Link"}
-                  </button>
+                  <input type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="email-input" required />
+                  <button type="submit" className="magic-btn" disabled={sending}>{sending ? "Sending…" : "Send Magic Link"}</button>
                 </form>
-
                 {authMsg && <p className="modal-msg error">{authMsg}</p>}
               </>
             ) : (

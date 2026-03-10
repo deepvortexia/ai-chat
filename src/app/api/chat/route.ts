@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import Replicate from "replicate";
 import { createClient } from "@/lib/supabase/server";
 import { checkUsageLimit, incrementUsage } from "@/utils/usage";
-import { AI_MODELS } from "@/lib/models";
+import { AI_MODELS, formatMessagesAsPrompt } from "@/lib/models";
 
-const OPENROUTER_BASE = "https://openrouter.ai/api/v1/chat/completions";
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_TOKEN!,
+});
 
 export async function POST(req: NextRequest) {
-  // Fail fast if the API key is missing (misconfigured deploy)
-  if (!process.env.OPENROUTER_API_KEY) {
-    console.error("OPENROUTER_API_KEY is not set.");
+  if (!process.env.REPLICATE_API_TOKEN) {
+    console.error("REPLICATE_API_TOKEN is not set.");
     return NextResponse.json({ error: "Server misconfiguration." }, { status: 500 });
   }
 
-  // Auth
+  // ── Auth ──────────────────────────────────────────────────────────────────
   const supabase = await createClient();
   const {
     data: { user },
@@ -22,14 +24,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { modelId, messages } = await req.json();
-  const model = AI_MODELS[modelId];
+  // ── Parse body ────────────────────────────────────────────────────────────
+  const { modelId, messages } = (await req.json()) as {
+    modelId: string;
+    messages: { role: "user" | "assistant"; content: string }[];
+  };
 
+  const model = AI_MODELS[modelId];
   if (!model) {
     return NextResponse.json({ error: "Invalid model." }, { status: 400 });
   }
 
-  // Usage gate — prevents spend deficit
+  // ── Usage gate (subscription + 500-message cap) ───────────────────────────
   const usage = await checkUsageLimit(user.id);
   if (!usage.allowed) {
     return NextResponse.json(
@@ -38,46 +44,60 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // OpenRouter — unified gateway for all 4 models:
-  //   google/gemini-2.5-flash-preview  (Gemini 2.5 Flash)
-  //   deepseek/deepseek-chat-v3-5      (DeepSeek v3.1)
-  //   anthropic/claude-sonnet-4-5      (Claude 4.5 Sonnet)
-  //   openai/gpt-5                     (GPT-5)
-  const response = await fetch(OPENROUTER_BASE, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "https://deepvortexai.art",
-      "X-Title": "Replica Hub",
+  // ── Build Replicate input ─────────────────────────────────────────────────
+  const prompt = formatMessagesAsPrompt(messages);
+  const systemPrompt =
+    `You are ${model.name}, an AI assistant. ${model.tagline} Be concise and helpful.`;
+
+  // ── Streaming via Replicate SDK ───────────────────────────────────────────
+  const encoder = new TextEncoder();
+  let didIncrement = false;
+
+  const readable = new ReadableStream({
+    async start(controller) {
+      try {
+        const stream = replicate.stream(model.replicateId as `${string}/${string}`, {
+          input: {
+            prompt,
+            system_prompt: systemPrompt,
+            max_new_tokens: 2048,
+            temperature: 0.7,
+          },
+        });
+
+        for await (const event of await stream) {
+          const text = event.toString();
+          if (!text) continue;
+
+          // SSE format: "data: <json>\n\n"
+          const chunk = `data: ${JSON.stringify({ text })}\n\n`;
+          controller.enqueue(encoder.encode(chunk));
+        }
+
+        // Increment usage once the stream completes successfully
+        if (!didIncrement) {
+          didIncrement = true;
+          await incrementUsage(user.id);
+        }
+
+        // Signal done — client reads this to finalize the message
+        controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+      } catch (err) {
+        console.error(`Replicate stream error [${model.replicateId}]:`, err);
+        const errorChunk = `data: ${JSON.stringify({ error: "Stream interrupted." })}\n\n`;
+        controller.enqueue(encoder.encode(errorChunk));
+      } finally {
+        controller.close();
+      }
     },
-    body: JSON.stringify({
-      model: model.openrouterId,
-      messages,
-      max_tokens: 2048,
-    }),
   });
 
-  if (!response.ok) {
-    const err = await response.text();
-    console.error(`OpenRouter [${model.openrouterId}] error:`, err);
-    return NextResponse.json(
-      { error: "Model request failed. Please try again." },
-      { status: 502 }
-    );
-  }
-
-  const data = await response.json();
-  const content: string = data.choices?.[0]?.message?.content ?? "";
-
-  // Increment usage counter only on successful response
-  await incrementUsage(user.id);
-
-  return NextResponse.json({
-    content,
-    usage: {
-      remaining: usage.remaining - 1,
-      limit: usage.limit,
+  return new Response(readable, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no", // disables Nginx proxy buffering on Vercel
     },
   });
 }

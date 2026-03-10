@@ -2,7 +2,13 @@ export interface AIModel {
   id: string;
   name: string;
   provider: string;
-  openrouterId: string;
+  /**
+   * Replicate model identifier: "owner/model-name"
+   * NOTE: GPT-5, Claude 4.5 Sonnet, and Gemini 2.5 Flash are proprietary and
+   * not hosted on Replicate. Replace these with real Replicate model versions
+   * once available, or configure a fallback gateway (e.g. OpenRouter).
+   */
+  replicateId: string;
   tagline: string;
   description: string;
   traits: string[];
@@ -16,7 +22,7 @@ export const AI_MODELS: Record<string, AIModel> = {
     id: "gemini-flash",
     name: "Gemini 2.5 Flash",
     provider: "Google",
-    openrouterId: "google/gemini-2.5-flash-preview",
+    replicateId: "google/gemini-2.5-flash", // swap for real Replicate version when available
     tagline: "Lightning fast. Infinitely aware.",
     description:
       "Google's fastest multimodal model with a 1M-token context window. Built for real-time tasks, document analysis, and high-volume workflows.",
@@ -29,7 +35,7 @@ export const AI_MODELS: Record<string, AIModel> = {
     id: "deepseek-v3",
     name: "DeepSeek v3.1",
     provider: "DeepSeek",
-    openrouterId: "deepseek/deepseek-chat-v3-5",
+    replicateId: "deepseek-ai/deepseek-v3", // closest available on Replicate
     tagline: "Logic-first. Code-native.",
     description:
       "DeepSeek's most efficient frontier model, purpose-built for code generation, algorithmic reasoning, and structured problem-solving at a fraction of the cost.",
@@ -42,7 +48,7 @@ export const AI_MODELS: Record<string, AIModel> = {
     id: "claude-sonnet",
     name: "Claude 4.5 Sonnet",
     provider: "Anthropic",
-    openrouterId: "anthropic/claude-sonnet-4-5",
+    replicateId: "anthropic/claude-sonnet-4-5", // swap for real Replicate version when available
     tagline: "Thoughtful. Nuanced. Reliable.",
     description:
       "Anthropic's balanced powerhouse combining deep reasoning, safety-first design, and exceptional writing quality — ideal for complex analysis and nuanced tasks.",
@@ -55,7 +61,7 @@ export const AI_MODELS: Record<string, AIModel> = {
     id: "gpt-5",
     name: "GPT-5",
     provider: "OpenAI",
-    openrouterId: "openai/gpt-5",
+    replicateId: "openai/gpt-5", // swap for real Replicate version when available
     tagline: "State of the art. Full stop.",
     description:
       "OpenAI's most capable model to date. Unmatched at complex multi-step reasoning, creative synthesis, and agentic tasks across every domain.",
@@ -68,3 +74,12 @@ export const AI_MODELS: Record<string, AIModel> = {
 
 export const MONTHLY_MESSAGE_LIMIT = 500;
 export const SUBSCRIPTION_PRICE_USD = 5.99;
+
+/** Convert a messages array into a single prompt string for Replicate models. */
+export function formatMessagesAsPrompt(
+  messages: { role: "user" | "assistant"; content: string }[]
+): string {
+  return messages
+    .map((m) => (m.role === "user" ? `User: ${m.content}` : `Assistant: ${m.content}`))
+    .join("\n") + "\nAssistant:";
+}

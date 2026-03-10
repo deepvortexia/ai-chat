@@ -17,16 +17,18 @@ export default function ChatPage() {
   const model: AIModel | undefined = AI_MODELS[modelId];
 
   const [messages, setMessages] = useState<Message[]>([]);
+  const [streamingContent, setStreamingContent] = useState<string>("");
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const justSubscribed = searchParams.get("subscribed") === "true";
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, streamingContent]);
 
   if (!model) {
     return (
@@ -46,37 +48,82 @@ export default function ChatPage() {
     if (!input.trim() || loading) return;
 
     const userMessage: Message = { role: "user", content: input.trim() };
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput("");
     setLoading(true);
     setError(null);
+    setStreamingContent("");
+
+    // Allow cancellation
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          modelId,
-          messages: [...messages, userMessage],
-        }),
+        signal: controller.signal,
+        body: JSON.stringify({ modelId, messages: updatedMessages }),
       });
 
-      const data = await res.json();
-
+      // Non-streaming error (auth, usage gate, etc.)
       if (!res.ok) {
+        const data = await res.json();
         setError(data.error ?? "Something went wrong.");
         return;
       }
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: data.content },
-      ]);
-    } catch {
-      setError("Network error. Please try again.");
+      // Read SSE stream token by token
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const raw = decoder.decode(value, { stream: true });
+
+        // Each SSE message is "data: <json>\n\n"
+        for (const line of raw.split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const payload = line.slice(6).trim();
+          if (payload === "[DONE]") break;
+
+          try {
+            const parsed = JSON.parse(payload) as { text?: string; error?: string };
+            if (parsed.error) {
+              setError(parsed.error);
+              return;
+            }
+            if (parsed.text) {
+              accumulated += parsed.text;
+              setStreamingContent(accumulated);
+            }
+          } catch {
+            // partial chunk — safe to ignore
+          }
+        }
+      }
+
+      // Commit the completed streamed message into the messages list
+      if (accumulated) {
+        setMessages((prev) => [...prev, { role: "assistant", content: accumulated }]);
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        setError("Network error. Please try again.");
+      }
     } finally {
+      setStreamingContent("");
       setLoading(false);
+      abortRef.current = null;
     }
+  }
+
+  function stopStream() {
+    abortRef.current?.abort();
   }
 
   return (
@@ -87,7 +134,9 @@ export default function ChatPage() {
           <Link href="/pricing" className="text-zinc-500 hover:text-zinc-300 transition">
             ← Back
           </Link>
-          <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${model.color} flex items-center justify-center text-sm`}>
+          <div
+            className={`w-8 h-8 rounded-lg bg-gradient-to-br ${model.color} flex items-center justify-center text-sm`}
+          >
             {model.icon}
           </div>
           <div>
@@ -110,8 +159,8 @@ export default function ChatPage() {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-          {/* Welcome card shown before first message */}
-          {messages.length === 0 && (
+          {/* Welcome card */}
+          {messages.length === 0 && !loading && (
             <div className="mt-8">
               {justSubscribed && (
                 <div className="mb-6 p-3 rounded-xl bg-emerald-900/30 border border-emerald-700/40 text-emerald-300 text-sm text-center">
@@ -146,14 +195,13 @@ export default function ChatPage() {
             </div>
           )}
 
-          {/* Chat messages */}
+          {/* Committed messages */}
           {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
+            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "assistant" && (
-                <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${model.color} flex items-center justify-center text-xs mr-2 mt-1 shrink-0`}>
+                <div
+                  className={`w-7 h-7 rounded-lg bg-gradient-to-br ${model.color} flex items-center justify-center text-xs mr-2 mt-1 shrink-0`}
+                >
                   {model.icon}
                 </div>
               )}
@@ -169,18 +217,27 @@ export default function ChatPage() {
             </div>
           ))}
 
-          {/* Loading indicator */}
+          {/* Live streaming bubble */}
           {loading && (
             <div className="flex items-start gap-2">
-              <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${model.color} flex items-center justify-center text-xs shrink-0`}>
+              <div
+                className={`w-7 h-7 rounded-lg bg-gradient-to-br ${model.color} flex items-center justify-center text-xs shrink-0`}
+              >
                 {model.icon}
               </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl rounded-tl-sm px-4 py-3">
-                <div className="flex gap-1.5 items-center h-4">
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce [animation-delay:0ms]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce [animation-delay:150ms]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce [animation-delay:300ms]" />
-                </div>
+              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
+                {streamingContent ? (
+                  <p className="text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap">
+                    {streamingContent}
+                    <span className="inline-block w-0.5 h-3.5 bg-zinc-400 ml-0.5 animate-pulse align-middle" />
+                  </p>
+                ) : (
+                  <div className="flex gap-1.5 items-center h-4">
+                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce [animation-delay:0ms]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce [animation-delay:150ms]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce [animation-delay:300ms]" />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -189,7 +246,7 @@ export default function ChatPage() {
           {error && (
             <div className="p-3 rounded-xl bg-red-900/20 border border-red-700/40 text-red-300 text-sm text-center">
               {error}
-              {error.includes("subscription") && (
+              {error.toLowerCase().includes("subscription") && (
                 <Link href="/pricing" className="ml-2 underline text-violet-400">
                   Subscribe →
                 </Link>
@@ -216,16 +273,27 @@ export default function ChatPage() {
               }}
               placeholder={`Message ${model.name}...`}
               rows={1}
-              className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 resize-none focus:outline-none focus:border-zinc-500 transition max-h-36 overflow-y-auto"
+              disabled={loading}
+              className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 resize-none focus:outline-none focus:border-zinc-500 transition max-h-36 overflow-y-auto disabled:opacity-50"
               style={{ fieldSizing: "content" } as React.CSSProperties}
             />
-            <button
-              type="submit"
-              disabled={loading || !input.trim()}
-              className={`px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r ${model.color} text-white disabled:opacity-40 disabled:cursor-not-allowed transition hover:opacity-90`}
-            >
-              Send
-            </button>
+            {loading ? (
+              <button
+                type="button"
+                onClick={stopStream}
+                className="px-4 py-3 rounded-xl text-sm font-medium bg-zinc-700 hover:bg-zinc-600 text-white transition"
+              >
+                Stop
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!input.trim()}
+                className={`px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r ${model.color} text-white disabled:opacity-40 disabled:cursor-not-allowed transition hover:opacity-90`}
+              >
+                Send
+              </button>
+            )}
           </form>
           <p className="text-xs text-zinc-600 mt-2 text-center">
             Shift+Enter for new line · 500 messages/month included

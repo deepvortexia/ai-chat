@@ -24,16 +24,7 @@ export async function POST(req: NextRequest) {
     customer_email: user.email,
     line_items: [
       {
-        price_data: {
-          currency: "usd",
-          recurring: { interval: "month" },
-          product_data: {
-            name: "Replica Hub — All Access",
-            description:
-              "Unlimited access to Gemini 2.5 Flash, DeepSeek v3.1, Claude 4.5 Sonnet & GPT-5 (500 msg/mo)",
-          },
-          unit_amount: 599, // $5.99 in cents
-        },
+        price: process.env.STRIPE_PRICE_ID!, // price_1T9FPBPRCOojlkAvLxiTHuVa
         quantity: 1,
       },
     ],

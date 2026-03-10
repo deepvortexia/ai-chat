@@ -3,8 +3,16 @@ import { createClient } from "@/lib/supabase/server";
 import { checkUsageLimit, incrementUsage } from "@/utils/usage";
 import { AI_MODELS } from "@/lib/models";
 
+const OPENROUTER_BASE = "https://openrouter.ai/api/v1/chat/completions";
+
 export async function POST(req: NextRequest) {
-  // Auth check
+  // Fail fast if the API key is missing (misconfigured deploy)
+  if (!process.env.OPENROUTER_API_KEY) {
+    console.error("OPENROUTER_API_KEY is not set.");
+    return NextResponse.json({ error: "Server misconfiguration." }, { status: 500 });
+  }
+
+  // Auth
   const supabase = await createClient();
   const {
     data: { user },
@@ -21,19 +29,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid model." }, { status: 400 });
   }
 
-  // Usage gate — prevent deficit
+  // Usage gate — prevents spend deficit
   const usage = await checkUsageLimit(user.id);
   if (!usage.allowed) {
-    return NextResponse.json({ error: usage.reason }, { status: 403 });
+    return NextResponse.json(
+      { error: usage.reason, remaining: usage.remaining },
+      { status: 403 }
+    );
   }
 
-  // Call OpenRouter
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  // OpenRouter — unified gateway for all 4 models:
+  //   google/gemini-2.5-flash-preview  (Gemini 2.5 Flash)
+  //   deepseek/deepseek-chat-v3-5      (DeepSeek v3.1)
+  //   anthropic/claude-sonnet-4-5      (Claude 4.5 Sonnet)
+  //   openai/gpt-5                     (GPT-5)
+  const response = await fetch(OPENROUTER_BASE, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": "https://replica-hub.com",
+      "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL ?? "https://deepvortexai.art",
       "X-Title": "Replica Hub",
     },
     body: JSON.stringify({
@@ -45,7 +60,7 @@ export async function POST(req: NextRequest) {
 
   if (!response.ok) {
     const err = await response.text();
-    console.error("OpenRouter error:", err);
+    console.error(`OpenRouter [${model.openrouterId}] error:`, err);
     return NextResponse.json(
       { error: "Model request failed. Please try again." },
       { status: 502 }
@@ -53,10 +68,16 @@ export async function POST(req: NextRequest) {
   }
 
   const data = await response.json();
-  const content = data.choices?.[0]?.message?.content ?? "";
+  const content: string = data.choices?.[0]?.message?.content ?? "";
 
-  // Increment usage only on success
+  // Increment usage counter only on successful response
   await incrementUsage(user.id);
 
-  return NextResponse.json({ content });
+  return NextResponse.json({
+    content,
+    usage: {
+      remaining: usage.remaining - 1,
+      limit: usage.limit,
+    },
+  });
 }

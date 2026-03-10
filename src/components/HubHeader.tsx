@@ -126,13 +126,13 @@ export default function HubHeader({ onStatusChange }: Props) {
             ) : (
               <div className="hub-pill" style={{ borderColor: "rgba(255,255,255,0.15)", color: "var(--text-dim)" }}>
                 <span className="pill-icon">🎁</span>
-                <span>5 free messages</span>
+                <span>Free trial active</span>
               </div>
             )
           ) : (
             <button className="hub-pill credits-pill clickable" onClick={() => setShowAuth(true)}>
               <span className="pill-icon">🎁</span>
-              <span>Sign in — 5 free messages</span>
+              <span>Sign in — try it free</span>
             </button>
           )}
 
@@ -173,7 +173,7 @@ export default function HubHeader({ onStatusChange }: Props) {
             {authStep === "form" ? (
               <>
                 <p className="modal-title">Welcome to Deep Vortex AI</p>
-                <p className="modal-subtitle">Sign in to get 5 free messages, then subscribe for unlimited access</p>
+                <p className="modal-subtitle">Sign in to try it free, then subscribe for unlimited access</p>
                 <button className="google-btn" onClick={handleGoogleSignIn}>
                   <span>🔐</span> Continue with Google
                 </button>

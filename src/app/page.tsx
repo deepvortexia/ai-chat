@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import HubHeader from "@/components/HubHeader";
 import { createClient } from "@/lib/supabase/client";
 
-const FREE_TRIAL_LIMIT = 5;
+const FREE_TRIAL_LIMIT = 10;
 
 const MODELS = [
   {
@@ -174,7 +174,7 @@ export default function ChatPage() {
         {isSubscribed
           ? "✦ Unlimited chat — subscription active"
           : trialRemaining > 0
-            ? `🎁 Free trial — ${trialRemaining} message${trialRemaining !== 1 ? "s" : ""} remaining`
+            ? "🎁 Free trial active — try any model"
             : "Free trial ended · subscribe for unlimited access"}
       </p>
 
@@ -219,7 +219,7 @@ export default function ChatPage() {
                 Free trial complete
               </p>
               <p style={{ fontSize: "0.8rem", color: "var(--text-dim)" }}>
-                You&apos;ve used all 5 free messages. Subscribe for unlimited access to all 4 models.
+                Your free trial is complete. Subscribe for unlimited access to all 4 models.
               </p>
             </div>
             <button
@@ -249,7 +249,7 @@ export default function ChatPage() {
               </span>
               {onFreeTrial && trialRemaining > 0 && (
                 <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.3rem" }}>
-                  {trialRemaining} free message{trialRemaining !== 1 ? "s" : ""} remaining
+                  Free trial — no account needed to start
                 </span>
               )}
             </div>
@@ -313,7 +313,7 @@ export default function ChatPage() {
           </form>
           <p className="input-hint">
             Shift+Enter for new line ·{" "}
-            {isSubscribed ? "Unlimited chat for subscribers" : `${trialRemaining} free message${trialRemaining !== 1 ? "s" : ""} remaining`}
+            {isSubscribed ? "Unlimited chat for subscribers" : trialRemaining > 0 ? "Free trial active" : "Subscribe for unlimited access"}
           </p>
         </div>
       </div>

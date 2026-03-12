@@ -471,7 +471,7 @@ body {
 /* ── HubHeader — kept for auth logic, styled for account drawer ─────────── */
 .hub-header { position: relative; z-index: 10; text-align: center; }
 .logo-zone  {
-  height: 120px;
+  height: 120px !important;
   width: auto;
   margin: 0 auto 0.9rem;
   display: flex;
@@ -479,7 +479,7 @@ body {
   justify-content: center;
 }
 .logo-img   {
-  height: 120px;
+  height: 120px !important;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 0 6px rgba(0,0,0,0.7)) drop-shadow(0 0 2px rgba(0,0,0,1));

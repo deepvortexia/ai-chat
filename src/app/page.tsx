@@ -231,13 +231,13 @@ export default function ChatPage() {
         <div className="top-logo">
           <Image
             src="/reallitylogoreal.webp"
-            alt="Deep Vortex AI"
+            alt="Deep Vortex AI Logo"
             width={32}
             height={32}
             priority
             style={{ objectFit: "contain", filter: "drop-shadow(0 0 6px rgba(0,0,0,0.7)) drop-shadow(0 0 2px rgba(0,0,0,1))" }}
           />
-          <span className="top-title">DΞΞP VORTΞX AI</span>
+          <h1 className="top-title">DΞΞP VORTΞX AI</h1>
         </div>
 
         {/* Current model pill */}

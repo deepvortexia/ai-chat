@@ -30,7 +30,10 @@ export const metadata: Metadata = {
     "advanced reasoning AI",
   ],
   alternates: { canonical: "https://chat.deepvortexai.art/" },
-  icons: { icon: "/reallitylogoreal.webp", apple: "/reallitylogoreal.webp" },
+  icons: {
+    icon: "https://chat.deepvortexai.art/favicon.ico?v=4",
+    apple: "https://chat.deepvortexai.art/apple-touch-icon.png?v=4",
+  },
 };
 
 export const viewport: Viewport = {

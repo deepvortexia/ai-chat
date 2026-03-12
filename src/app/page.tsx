@@ -230,12 +230,12 @@ export default function ChatPage() {
       <header className="top-bar">
         <div className="top-logo">
           <Image
-            src="/logo-real.webp"
+            src="/reallitylogoreal.webp"
             alt="Deep Vortex AI"
-            width={40}
-            height={40}
+            width={32}
+            height={32}
             priority
-            style={{ objectFit: "contain", filter: "drop-shadow(0 0 6px rgba(212,175,55,0.5))" }}
+            style={{ objectFit: "contain", filter: "drop-shadow(0 0 6px rgba(0,0,0,0.7)) drop-shadow(0 0 2px rgba(0,0,0,1))" }}
           />
           <span className="top-title">DΞΞP VORTΞX AI</span>
         </div>

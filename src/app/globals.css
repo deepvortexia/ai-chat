@@ -92,6 +92,8 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
+  min-width: 0;
 }
 .top-title {
   font-family: var(--font-brand);
@@ -99,6 +101,7 @@ body {
   font-weight: 900;
   letter-spacing: 2.5px;
   text-transform: uppercase;
+  white-space: nowrap;
   background: linear-gradient(135deg, var(--light-gold) 0%, var(--accent-gold) 40%, var(--gold) 60%, var(--dark-gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

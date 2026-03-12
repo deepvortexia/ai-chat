@@ -16,20 +16,30 @@ export async function POST(req: NextRequest) {
 
   const origin = req.headers.get("origin") ?? "https://chat.deepvortexai.art";
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    payment_method_types: ["card"],
-    customer_email: user.email,
-    line_items: [
-      {
-        price: process.env.STRIPE_PRICE_ID!, // $6.99/mo recurring
-        quantity: 1,
-      },
-    ],
-    metadata: { user_id: user.id },
-    success_url: `${origin}/?subscribed=true`,
-    cancel_url:  `${origin}/?canceled=true`,
-  });
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      payment_method_types: ["card"],
+      customer_email: user.email ?? undefined,
+      line_items: [
+        {
+          price: process.env.STRIPE_PRICE_ID!,
+          quantity: 1,
+        },
+      ],
+      metadata: { user_id: user.id },
+      success_url: `${origin}/?subscribed=true`,
+      cancel_url:  `${origin}/?canceled=true`,
+    });
 
-  return NextResponse.json({ url: session.url });
+    if (!session.url) {
+      return NextResponse.json({ error: "Stripe did not return a checkout URL." }, { status: 500 });
+    }
+
+    return NextResponse.json({ url: session.url });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Stripe checkout error:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }

@@ -4,11 +4,17 @@ export interface AIModel {
   provider: string;
   /**
    * Replicate model identifier: "owner/model-name"
-   * NOTE: GPT-5, Claude 4.5 Sonnet, and Gemini 2.5 Flash are proprietary and
-   * not hosted on Replicate. Replace these with real Replicate model versions
-   * once available, or configure a fallback gateway (e.g. OpenRouter).
+   * NOTE: GPT-5 and Gemini 2.5 Flash are not yet available on Replicate.
+   * Replace these with real Replicate model versions once available, or
+   * configure a fallback gateway (e.g. OpenRouter).
    */
   replicateId: string;
+  /**
+   * Input parameter format for the Replicate model.
+   * "anthropic" = uses `system` + `max_tokens`
+   * "llama"     = uses `system_prompt` + `max_new_tokens` (default)
+   */
+  inputFormat?: "llama" | "anthropic";
   tagline: string;
   description: string;
   traits: string[];
@@ -46,9 +52,10 @@ export const AI_MODELS: Record<string, AIModel> = {
   },
   "claude-sonnet": {
     id: "claude-sonnet",
-    name: "Claude 4.5 Sonnet",
+    name: "Claude Sonnet 4.5",
     provider: "Anthropic",
-    replicateId: "anthropic/claude-sonnet-4-5", // swap for real Replicate version when available
+    replicateId: "anthropic/claude-sonnet-4-5", // Claude Sonnet 4.5 — latest Claude available on Replicate
+    inputFormat: "anthropic",
     tagline: "Thoughtful. Nuanced. Reliable.",
     description:
       "Anthropic's balanced powerhouse combining deep reasoning, safety-first design, and exceptional writing quality — ideal for complex analysis and nuanced tasks.",

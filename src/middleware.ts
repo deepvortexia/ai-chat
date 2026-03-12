@@ -5,9 +5,14 @@ import { NextResponse, type NextRequest } from "next/server";
  * Refresh the Supabase session on every request so:
  *  - Server components always see a valid session
  *  - Expired tokens are silently refreshed before they hit an API route
+ *
+ * Cookies are written with NEXT_PUBLIC_COOKIE_DOMAIN (e.g. ".deepvortexai.art")
+ * so the same session is shared across all subdomains.
  */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
+
+  const cookieDomain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,20 +23,26 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          // Write updated cookies both to the request and the response
+          // 1. Forward refreshed cookies into the outgoing request
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
+          // 2. Rebuild the response with those cookies
           response = NextResponse.next({ request });
+          // 3. Write to the response with the shared domain
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(
+              name,
+              value,
+              cookieDomain ? { ...options, domain: cookieDomain } : options
+            )
           );
         },
       },
     }
   );
 
-  // Calling getUser() triggers a token refresh if needed
+  // getUser() triggers a token refresh if the access token is expired
   await supabase.auth.getUser();
 
   return response;

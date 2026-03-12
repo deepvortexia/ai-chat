@@ -125,8 +125,8 @@ export default function HubHeader({ onStatusChange }: Props) {
           <Image
             src="/reallitylogoreal.webp"
             alt="Deep Vortex AI"
-            width={200}
-            height={60}
+            width={400}
+            height={120}
             priority={true}
             className="logo-img"
           />

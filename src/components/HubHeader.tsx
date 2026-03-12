@@ -120,24 +120,15 @@ export default function HubHeader({ onStatusChange }: Props) {
 
   return (
     <>
-      {[...Array(6)].map((_, i) => (
-        <span
-          key={i}
-          className="particle-dot"
-          style={{ left: `${10 + i * 15}%`, animationDelay: `${i * 1.3}s`, animationDuration: `${7 + i}s` }}
-        />
-      ))}
-
       <header className="hub-header">
         <div className="logo-zone">
           <Image
-            src="/real.png"
+            src="/reallitylogoreal.webp"
             alt="Deep Vortex AI"
-            width={140}
-            height={140}
+            width={200}
+            height={60}
             priority={true}
             className="logo-img"
-            style={{ objectFit: "contain", filter: "drop-shadow(0 0 18px rgba(255,215,100,0.45)) drop-shadow(0 0 36px rgba(255,215,100,0.2))" }}
           />
         </div>
 

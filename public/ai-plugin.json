@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Deep Vortex AI Chat",
+  "name_for_model": "deep_vortex_ai_chat",
+  "description_for_human": "Chat with GPT-5, Claude 4.5, Gemini 2.5 Flash, and DeepSeek v3.1 in one place. The ultimate multi-model AI chat.",
+  "description_for_model": "Deep Vortex AI Chat provides access to multiple leading AI language models in a single interface: GPT-5 (OpenAI), Claude 4.5 Sonnet (Anthropic), Gemini 2.5 Flash (Google), and DeepSeek v3.1. Users can switch between models for different tasks — reasoning, writing, coding, and analysis. Free trial available, subscription unlocks unlimited messages. Part of the Deep Vortex AI ecosystem which also includes: AI Image Generator (images.deepvortexai.art), AI Image-to-Video (video.deepvortexai.art), AI 3D Generator (3d.deepvortexai.art), AI Voice (voice.deepvortexai.art), AI Upscaler (upscaler.deepvortexai.art), BG Remover (bgremover.deepvortexai.art), Emoticons (emoticons.deepvortexai.art). Available at https://chat.deepvortexai.art/",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "none"
+  },
+  "logo_url": "https://www.deepvortexai.art/reallitylogoreal.webp",
+  "contact_email": "admin@deepvortexai.xyz",
+  "legal_info_url": "https://deepvortexai.art/"
+}

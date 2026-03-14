@@ -62,7 +62,7 @@ export default function ChatPage() {
   const { session, ready: authReady } = useAuth();
   const isAuthenticated = !!session;
 
-  const [selectedModel, setSelectedModel]       = useState<ModelId>("gpt-5");
+  const [selectedModel, setSelectedModel]       = useState<ModelId>("claude-sonnet");
   const [activeDrawer,  setActiveDrawer]        = useState<"models" | "account" | null>(null);
   const [isSubscribed,  setIsSubscribed]        = useState(false);
   const [messageCount,  setMessageCount]        = useState(0);

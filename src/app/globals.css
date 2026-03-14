@@ -353,23 +353,26 @@ body {
   gap: 4px;
   background: none;
   border: none;
-  color: rgba(212,175,55,0.35);
+  color: rgba(212,175,55,0.45);
+  opacity: 0.45;
   cursor: pointer;
-  transition: color 0.18s, background 0.15s, text-shadow 0.18s;
+  transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   padding: 0.4rem 0;
   font-family: var(--font-ui);
 }
 .nav-tab:active { background: rgba(212,175,55,0.07); }
 .nav-tab.active  {
+  opacity: 1;
   color: var(--gold);
   text-shadow: 0 0 10px rgba(212,175,55,0.7), 0 0 24px rgba(212,175,55,0.35);
 }
+.nav-tab.active .nav-label { color: var(--gold); }
 .nav-tab.active .nav-icon {
   filter: drop-shadow(0 0 6px rgba(212,175,55,0.8));
 }
-.nav-icon  { font-size: 1.5rem; line-height: 1; }
-.nav-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; }
+.nav-icon  { font-size: 1.6rem; line-height: 1; }
+.nav-label { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.7px; text-transform: uppercase; }
 
 /* ── Drawer backdrop ─────────────────────────────────────────────────────── */
 .drawer-backdrop {

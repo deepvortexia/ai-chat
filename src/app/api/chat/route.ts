@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import Replicate from "replicate";
+import { tavily } from "@tavily/core";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { AI_MODELS, formatMessagesAsPrompt } from "@/lib/models";
+
 
 const FREE_TRIAL_LIMIT      = 8;
 const SUBSCRIBER_MONTHLY_LIMIT = 450;
@@ -98,8 +100,26 @@ export async function POST(req: NextRequest) {
   const model = AI_MODELS[modelId];
   if (!model) return NextResponse.json({ error: "Invalid model." }, { status: 400 });
 
+  const userMessage = messages.at(-1)?.content ?? "";
+  const needsSearch = /today|tonight|yesterday|current|recent|latest|breaking|now|202[456]|news|happened|announced|who is|ceo|president|stock|crypto|bitcoin|price|weather|forecast|aujourd'hui|maintenant|actuellement|récent|actualité|qui est|météo|bourse|marché|combien/i.test(userMessage);
+
+  let searchContext = "";
+  if (needsSearch && process.env.TAVILY_API_KEY) {
+    try {
+      const results = await tavily({ apiKey: process.env.TAVILY_API_KEY }).search(userMessage, { maxResults: 3 });
+      if (results.results.length > 0) {
+        const snippets = results.results
+          .map((r, i) => `[${i + 1}] ${r.title}\n${r.content}`)
+          .join("\n\n");
+        searchContext = `\n\nWeb search results (today: ${new Date().toDateString()}):\n${snippets}\n\nUse the above to answer accurately.`;
+      }
+    } catch {
+      // Search failed — continue without it
+    }
+  }
+
   const prompt       = formatMessagesAsPrompt(messages);
-  const systemPrompt = `You are ${model.name}. ${model.tagline} Be helpful, concise and direct.`;
+  const systemPrompt = `You are ${model.name}. ${model.tagline} Be helpful, concise and direct.${searchContext}`;
 
   // Build model-specific input — Anthropic models use different param names
   const replicateInput = model.inputFormat === "anthropic"

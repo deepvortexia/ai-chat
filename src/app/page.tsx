@@ -11,31 +11,14 @@ const SUBSCRIBER_MONTHLY_LIMIT = 450;
 
 const MODELS = [
   {
-    id: "gpt-5",
-    name: "GPT-5",
-    provider: "OpenAI",
-    icon: "◆",
-    skill: "Ultimate Reasoning",
-    color: "#f97316",
-    gradient: "linear-gradient(135deg,#f97316,#ea580c)",
-  },
-  {
     id: "claude-sonnet",
-    name: "Claude 4.5",
+    name: "Claude Sonnet 4.5",
     provider: "Anthropic",
     icon: "✦",
     skill: "Writing & Analysis",
+    description: "Best for writing, analysis & nuanced conversation",
     color: "#a855f7",
     gradient: "linear-gradient(135deg,#a855f7,#7c3aed)",
-  },
-  {
-    id: "gemini-flash",
-    name: "Gemini 2.5",
-    provider: "Google",
-    icon: "⚡",
-    skill: "1M Context · Fast",
-    color: "#06b6d4",
-    gradient: "linear-gradient(135deg,#06b6d4,#0284c7)",
   },
   {
     id: "deepseek-v3",
@@ -43,8 +26,29 @@ const MODELS = [
     provider: "DeepSeek",
     icon: "🧠",
     skill: "Coding & Logic",
+    description: "Fast & affordable, great for general tasks",
     color: "#10b981",
     gradient: "linear-gradient(135deg,#10b981,#059669)",
+  },
+  {
+    id: "llama-405b",
+    name: "Llama 3.1 405B",
+    provider: "Meta",
+    icon: "⚡",
+    skill: "Open · Balanced",
+    description: "Powerful open-source, balanced performance",
+    color: "#06b6d4",
+    gradient: "linear-gradient(135deg,#06b6d4,#0284c7)",
+  },
+  {
+    id: "deepseek-r1",
+    name: "DeepSeek R1",
+    provider: "DeepSeek",
+    icon: "◆",
+    skill: "Deep Reasoning",
+    description: "Advanced reasoning & complex problem solving",
+    color: "#f97316",
+    gradient: "linear-gradient(135deg,#f97316,#ea580c)",
   },
 ] as const;
 
@@ -230,7 +234,7 @@ export default function ChatPage() {
       <header className="top-bar">
         <div className="top-logo">
           <Image
-            src="/reallitylogoreal.webp"
+            src="/logotinyreal.webp"
             alt="Deep Vortex AI Logo"
             width={32}
             height={32}
@@ -394,6 +398,7 @@ export default function ChatPage() {
                   {m.name}
                 </span>
                 <span className="mc-provider">{m.provider}</span>
+                <span className="mc-desc">{m.description}</span>
                 {active && (
                   <span className="mc-active" style={{ color: m.color }}>● Active</span>
                 )}

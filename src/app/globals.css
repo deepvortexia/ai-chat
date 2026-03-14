@@ -130,7 +130,7 @@ body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: 1.25rem 1rem 0.5rem;
+  padding: 1rem 1.25rem 0.5rem;
   display: flex;
   flex-direction: column;
   scrollbar-width: none;
@@ -159,7 +159,7 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 0.6rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.25rem;
   animation: msgIn 0.2s ease;
 }
 @keyframes msgIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
@@ -191,9 +191,13 @@ body {
 }
 /* Assistant: borderless prose */
 .msg-bubble.assistant {
-  max-width: 92%;
-  min-width: 60%;
-  padding: 0.25rem 0;
+  max-width: 95%;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+  line-height: 1.8;
+  font-size: 1rem;
+  padding: 0.5rem 0;
   color: var(--text-soft);
 }
 

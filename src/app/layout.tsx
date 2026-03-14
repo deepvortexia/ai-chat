@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Orbitron, Inter } from "next/font/google";
+import { Orbitron, Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 
@@ -12,8 +12,15 @@ const orbitron = Orbitron({
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "800"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -66,7 +73,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${inter.variable}`}>
+    <html lang="en" className={`${orbitron.variable} ${inter.variable} ${jakarta.variable}`}>
       <head>
         <script
           type="application/ld+json"

@@ -29,7 +29,7 @@
   --text-soft:      rgba(255,255,255,0.82);
 
   /* Fonts */
-  --font-ui:        var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
+  --font-ui:        var(--font-jakarta), 'Plus Jakarta Sans', var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
   --font-brand:     var(--font-orbitron), 'Orbitron', sans-serif;
 
   /* Layout */

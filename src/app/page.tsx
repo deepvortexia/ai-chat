@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 import HubHeader from "@/components/HubHeader";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
@@ -288,7 +289,11 @@ export default function ChatPage() {
                 {msg.role === "assistant" && (
                   <ModelIcon letter={model.iconLetter} color={model.iconColor} size={32} />
                 )}
-                <div className={`msg-bubble ${msg.role}`}>{msg.content}</div>
+                <div className={`msg-bubble ${msg.role}`}>
+                  {msg.role === "assistant"
+                    ? <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    : msg.content}
+                </div>
               </div>
             ))}
 
@@ -297,7 +302,7 @@ export default function ChatPage() {
                 <ModelIcon letter={model.iconLetter} color={model.iconColor} size={32} />
                 <div className="msg-bubble assistant">
                   {streamContent ? (
-                    <>{streamContent}<span className="cursor-blink" /></>
+                    <><ReactMarkdown>{streamContent}</ReactMarkdown><span className="cursor-blink" /></>
                   ) : (
                     <div className="skeleton-row">
                       <span className="skeleton-dot" />

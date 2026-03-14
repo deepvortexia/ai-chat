@@ -23,8 +23,8 @@ export const AI_MODELS: Record<string, AIModel> = {
     id: "claude-sonnet",
     name: "Claude Sonnet 4.5",
     provider: "Anthropic",
-    replicateId: "anthropic/claude-sonnet-4-5",
-    inputFormat: "anthropic",
+    replicateId: "anthropic/claude-4.5-sonnet",
+    inputFormat: "llama",
     tagline: "Thoughtful. Nuanced. Reliable.",
     description:
       "Anthropic's balanced powerhouse combining deep reasoning, safety-first design, and exceptional writing quality — ideal for complex analysis and nuanced tasks.",

@@ -2,12 +2,7 @@ export interface AIModel {
   id: string;
   name: string;
   provider: string;
-  /**
-   * Replicate model identifier: "owner/model-name"
-   * NOTE: GPT-5 and Gemini 2.5 Flash are not yet available on Replicate.
-   * Replace these with real Replicate model versions once available, or
-   * configure a fallback gateway (e.g. OpenRouter).
-   */
+  /** Replicate model identifier: "owner/model-name" */
   replicateId: string;
   /**
    * Input parameter format for the Replicate model.
@@ -24,37 +19,11 @@ export interface AIModel {
 }
 
 export const AI_MODELS: Record<string, AIModel> = {
-  "gemini-flash": {
-    id: "gemini-flash",
-    name: "Gemini 2.5 Flash",
-    provider: "Google",
-    replicateId: "google/gemini-2.5-flash", // swap for real Replicate version when available
-    tagline: "Lightning fast. Infinitely aware.",
-    description:
-      "Google's fastest multimodal model with a 1M-token context window. Built for real-time tasks, document analysis, and high-volume workflows.",
-    traits: ["1M token context", "Multimodal", "Sub-second latency", "Web grounding"],
-    color: "from-blue-600 to-cyan-500",
-    accentColor: "text-cyan-400",
-    icon: "⚡",
-  },
-  "deepseek-v3": {
-    id: "deepseek-v3",
-    name: "DeepSeek v3.1",
-    provider: "DeepSeek",
-    replicateId: "deepseek-ai/deepseek-v3", // closest available on Replicate
-    tagline: "Logic-first. Code-native.",
-    description:
-      "DeepSeek's most efficient frontier model, purpose-built for code generation, algorithmic reasoning, and structured problem-solving at a fraction of the cost.",
-    traits: ["Code generation", "Chain-of-thought", "Cost-efficient", "Math & logic"],
-    color: "from-emerald-600 to-teal-500",
-    accentColor: "text-emerald-400",
-    icon: "🧠",
-  },
   "claude-sonnet": {
     id: "claude-sonnet",
     name: "Claude Sonnet 4.5",
     provider: "Anthropic",
-    replicateId: "anthropic/claude-sonnet-4-5", // Claude Sonnet 4.5 — latest Claude available on Replicate
+    replicateId: "anthropic/claude-sonnet-4-5",
     inputFormat: "anthropic",
     tagline: "Thoughtful. Nuanced. Reliable.",
     description:
@@ -64,22 +33,51 @@ export const AI_MODELS: Record<string, AIModel> = {
     accentColor: "text-violet-400",
     icon: "✦",
   },
-  "gpt-5": {
-    id: "gpt-5",
-    name: "GPT-5",
-    provider: "OpenAI",
-    replicateId: "openai/gpt-5", // swap for real Replicate version when available
-    tagline: "State of the art. Full stop.",
+  "deepseek-v3": {
+    id: "deepseek-v3",
+    name: "DeepSeek v3.1",
+    provider: "DeepSeek",
+    replicateId: "deepseek-ai/deepseek-v3",
+    inputFormat: "llama",
+    tagline: "Logic-first. Code-native.",
     description:
-      "OpenAI's most capable model to date. Unmatched at complex multi-step reasoning, creative synthesis, and agentic tasks across every domain.",
-    traits: ["Best-in-class reasoning", "Agentic tasks", "Creative synthesis", "Tool use"],
+      "DeepSeek's most efficient frontier model, purpose-built for code generation, algorithmic reasoning, and structured problem-solving at a fraction of the cost.",
+    traits: ["Code generation", "Chain-of-thought", "Cost-efficient", "Math & logic"],
+    color: "from-emerald-600 to-teal-500",
+    accentColor: "text-emerald-400",
+    icon: "🧠",
+  },
+  "llama-405b": {
+    id: "llama-405b",
+    name: "Llama 3.1 405B",
+    provider: "Meta",
+    replicateId: "meta/meta-llama-3.1-405b-instruct",
+    inputFormat: "llama",
+    tagline: "Open. Massive. Capable.",
+    description:
+      "Meta's largest open-weight model at 405 billion parameters. Excels at complex reasoning, multilingual tasks, and long-context understanding with full transparency.",
+    traits: ["405B parameters", "Open weights", "Multilingual", "Long context"],
+    color: "from-blue-600 to-cyan-500",
+    accentColor: "text-cyan-400",
+    icon: "⚡",
+  },
+  "deepseek-r1": {
+    id: "deepseek-r1",
+    name: "DeepSeek R1",
+    provider: "DeepSeek",
+    replicateId: "deepseek-ai/deepseek-r1",
+    inputFormat: "llama",
+    tagline: "Reason deeper. Think longer.",
+    description:
+      "DeepSeek's reasoning-focused model trained with reinforcement learning for step-by-step problem solving. Matches frontier models on math, science, and coding benchmarks.",
+    traits: ["Chain-of-thought", "Math & science", "RL-trained", "Deep reasoning"],
     color: "from-rose-600 to-orange-500",
     accentColor: "text-rose-400",
     icon: "◆",
   },
 };
 
-export const MONTHLY_MESSAGE_LIMIT = 500;
+export const MONTHLY_MESSAGE_LIMIT = 400;
 export const SUBSCRIPTION_PRICE_USD = 5.99;
 
 /** Convert a messages array into a single prompt string for Replicate models. */

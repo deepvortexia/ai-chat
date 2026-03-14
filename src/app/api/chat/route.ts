@@ -101,7 +101,8 @@ export async function POST(req: NextRequest) {
   if (!model) return NextResponse.json({ error: "Invalid model." }, { status: 400 });
 
   const userMessage = messages.at(-1)?.content ?? "";
-  const needsSearch = /today|tonight|yesterday|current|recent|latest|breaking|now|202[456]|news|happened|announced|who is|ceo|president|stock|crypto|bitcoin|price|weather|forecast|aujourd'hui|maintenant|actuellement|récent|actualité|qui est|météo|bourse|marché|combien/i.test(userMessage);
+  const skipSearch = /^(write|écris|code|program|explain|explique|définit|define|calculate|calcule|translate|traduis|summarize|résume|help me write|aide.*écrire|\d+[\+\-\*\/]\d+)/i.test(userMessage);
+  const needsSearch = !skipSearch;
 
   console.log("[search] needsSearch:", needsSearch, "| message:", userMessage);
   console.log("[search] TAVILY_API_KEY present:", !!process.env.TAVILY_API_KEY);

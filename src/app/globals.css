@@ -163,7 +163,8 @@ body {
   animation: msgIn 0.2s ease;
 }
 @keyframes msgIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-.msg-row.user { justify-content: flex-end; }
+.msg-row.user      { justify-content: flex-end; }
+.msg-row.assistant { align-items: flex-start; width: 100%; }
 
 .msg-avatar {
   width: 30px; height: 30px;
@@ -190,7 +191,8 @@ body {
 }
 /* Assistant: borderless prose */
 .msg-bubble.assistant {
-  max-width: 90%;
+  max-width: 92%;
+  min-width: 60%;
   padding: 0.25rem 0;
   color: var(--text-soft);
 }

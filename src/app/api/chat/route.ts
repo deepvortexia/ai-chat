@@ -103,18 +103,22 @@ export async function POST(req: NextRequest) {
   const userMessage = messages.at(-1)?.content ?? "";
   const needsSearch = /today|tonight|yesterday|current|recent|latest|breaking|now|202[456]|news|happened|announced|who is|ceo|president|stock|crypto|bitcoin|price|weather|forecast|aujourd'hui|maintenant|actuellement|récent|actualité|qui est|météo|bourse|marché|combien/i.test(userMessage);
 
+  console.log("[search] needsSearch:", needsSearch, "| message:", userMessage);
+  console.log("[search] TAVILY_API_KEY present:", !!process.env.TAVILY_API_KEY);
+
   let searchContext = "";
   if (needsSearch && process.env.TAVILY_API_KEY) {
     try {
       const results = await tavily({ apiKey: process.env.TAVILY_API_KEY }).search(userMessage, { maxResults: 3 });
+      console.log("[search] results count:", results.results.length);
       if (results.results.length > 0) {
         const snippets = results.results
           .map((r, i) => `[${i + 1}] ${r.title}\n${r.content}`)
           .join("\n\n");
         searchContext = `\n\nWeb search results (today: ${new Date().toDateString()}):\n${snippets}\n\nUse the above to answer accurately.`;
       }
-    } catch {
-      // Search failed — continue without it
+    } catch (err) {
+      console.error("[search] Tavily error:", err);
     }
   }
 

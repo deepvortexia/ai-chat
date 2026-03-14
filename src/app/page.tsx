@@ -14,7 +14,8 @@ const MODELS = [
     id: "claude-sonnet",
     name: "Claude Sonnet 4.5",
     provider: "Anthropic",
-    icon: "✦",
+    iconLetter: "C",
+    iconColor: "#cc785c",
     skill: "Writing & Analysis",
     description: "Best for writing, analysis & nuanced conversation",
     color: "#a855f7",
@@ -24,7 +25,8 @@ const MODELS = [
     id: "deepseek-v3",
     name: "DeepSeek v3.1",
     provider: "DeepSeek",
-    icon: "🧠",
+    iconLetter: "D",
+    iconColor: "#4d9fff",
     skill: "Coding & Logic",
     description: "Fast & affordable, great for general tasks",
     color: "#10b981",
@@ -34,7 +36,8 @@ const MODELS = [
     id: "gpt5",
     name: "GPT-5",
     provider: "OpenAI",
-    icon: "⚡",
+    iconLetter: "G",
+    iconColor: "#10a37f",
     skill: "Frontier Reasoning",
     description: "OpenAI's most capable model — powerful reasoning, coding and analysis.",
     color: "#06b6d4",
@@ -44,13 +47,26 @@ const MODELS = [
     id: "gemini-flash",
     name: "Gemini 2.5 Flash",
     provider: "Google",
-    icon: "◆",
+    iconLetter: "✦",
+    iconColor: "#8ab4f8",
     skill: "Fast & Smart",
     description: "Google's fastest frontier model — lightning quick responses with strong reasoning.",
     color: "#f97316",
     gradient: "linear-gradient(135deg,#f97316,#ea580c)",
   },
 ] as const;
+
+function ModelIcon({ letter, color, size = 36 }: { letter: string; color: string; size?: number }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: "50%", background: color,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontWeight: 700, fontSize: size * 0.42, color: "white", flexShrink: 0,
+    }}>
+      {letter}
+    </div>
+  );
+}
 
 type ModelId = (typeof MODELS)[number]["id"];
 interface Message { role: "user" | "assistant"; content: string; }
@@ -250,7 +266,7 @@ export default function ChatPage() {
           style={{ borderColor: model.color, color: model.color }}
           onClick={() => setActiveDrawer(activeDrawer === "models" ? null : "models")}
         >
-          <span style={{ fontSize: "0.9rem" }}>{model.icon}</span>
+          <ModelIcon letter={model.iconLetter} color={model.iconColor} size={22} />
           <span>{model.name}</span>
         </button>
       </header>
@@ -259,7 +275,7 @@ export default function ChatPage() {
       <div className="messages-area">
         {messages.length === 0 && !loading ? (
           <div className="chat-empty">
-            <span className="empty-icon">{model.icon}</span>
+            <ModelIcon letter={model.iconLetter} color={model.iconColor} size={56} />
             <span className="empty-title">Start a conversation</span>
             <span className="empty-sub" style={{ color: model.color }}>
               {model.name} · {model.skill}
@@ -270,9 +286,7 @@ export default function ChatPage() {
             {messages.map((msg, i) => (
               <div key={i} className={`msg-row ${msg.role}`}>
                 {msg.role === "assistant" && (
-                  <div className="msg-avatar" style={{ background: model.gradient }}>
-                    {model.icon}
-                  </div>
+                  <ModelIcon letter={model.iconLetter} color={model.iconColor} size={32} />
                 )}
                 <div className={`msg-bubble ${msg.role}`}>{msg.content}</div>
               </div>
@@ -280,9 +294,7 @@ export default function ChatPage() {
 
             {loading && (
               <div className="msg-row assistant">
-                <div className="msg-avatar" style={{ background: model.gradient }}>
-                  {model.icon}
-                </div>
+                <ModelIcon letter={model.iconLetter} color={model.iconColor} size={32} />
                 <div className="msg-bubble assistant">
                   {streamContent ? (
                     <>{streamContent}<span className="cursor-blink" /></>
@@ -393,7 +405,7 @@ export default function ChatPage() {
                   className="mc-glow"
                   style={{ background: m.gradient, opacity: active ? 0.06 : 0 }}
                 />
-                <span className="mc-icon">{m.icon}</span>
+                <ModelIcon letter={m.iconLetter} color={m.iconColor} size={36} />
                 <span className="mc-name" style={{ color: active ? m.color : undefined }}>
                   {m.name}
                 </span>

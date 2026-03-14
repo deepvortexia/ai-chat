@@ -474,18 +474,32 @@ body {
 /* ── HubHeader — kept for auth logic, styled for account drawer ─────────── */
 .hub-header { position: relative; z-index: 10; text-align: center; }
 .logo-zone  {
-  height: 120px !important;
+  height: 80px !important;
   width: auto;
   margin: 0 auto 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
+@keyframes logoVortex {
+  0%, 100% {
+    transform: translateZ(0) rotate(-3deg) scale(0.98);
+    filter: drop-shadow(0 0 8px rgba(255,160,0,0.45)) drop-shadow(0 0 2px rgba(0,0,0,0.8));
+  }
+  50% {
+    transform: translateZ(0) rotate(3deg) scale(1.02);
+    filter: drop-shadow(0 0 20px rgba(255,160,0,0.85)) drop-shadow(0 0 40px rgba(255,100,0,0.4)) drop-shadow(0 0 2px rgba(0,0,0,0.8));
+  }
+}
+
 .logo-img   {
-  height: 120px !important;
+  height: 80px !important;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 6px rgba(0,0,0,0.7)) drop-shadow(0 0 2px rgba(0,0,0,1));
+  animation: logoVortex 5s ease-in-out infinite;
+  will-change: transform, filter;
+  transform-origin: center center;
 }
 .hub-title {
   font-family: var(--font-brand);

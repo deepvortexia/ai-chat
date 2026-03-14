@@ -123,10 +123,10 @@ export default function HubHeader({ onStatusChange }: Props) {
       <header className="hub-header">
         <div className="logo-zone">
           <Image
-            src="/reallitylogoreal.webp"
+            src="/logotinyreal.webp"
             alt="Deep Vortex AI"
-            width={400}
-            height={120}
+            width={180}
+            height={180}
             priority={true}
             className="logo-img"
           />

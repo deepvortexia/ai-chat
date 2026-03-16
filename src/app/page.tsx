@@ -532,6 +532,7 @@ export default function ChatPage() {
           </div>
         </div>
       )}
+    <a href="https://deepvortexai.art/game" target="_blank" rel="noopener noreferrer" className="play-earn-fab">⚡ Play & Earn</a>
     </div>
   );
 }

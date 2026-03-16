@@ -371,8 +371,9 @@ body {
   gap: 4px;
   background: none;
   border: none;
-  color: rgba(212,175,55,0.45);
-  opacity: 0.45;
+  border-top: 2px solid transparent;
+  color: rgba(212,175,55,0.6);
+  opacity: 1;
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
@@ -382,10 +383,11 @@ body {
 .nav-tab:active { background: rgba(212,175,55,0.07); }
 .nav-tab.active  {
   opacity: 1;
-  color: var(--gold);
+  color: #FFD700;
+  border-top: 2px solid #FFD700;
   text-shadow: 0 0 10px rgba(212,175,55,0.7), 0 0 24px rgba(212,175,55,0.35);
 }
-.nav-tab.active .nav-label { color: var(--gold); }
+.nav-tab.active .nav-label { color: #FFD700; }
 .nav-tab.active .nav-icon {
   filter: drop-shadow(0 0 6px rgba(212,175,55,0.8));
 }

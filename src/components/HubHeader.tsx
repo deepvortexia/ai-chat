@@ -66,7 +66,12 @@ export default function HubHeader({ onStatusChange }: Props) {
     setCheckoutLoading(true);
     setCheckoutError("");
     try {
-      const res  = await fetch("/api/stripe/checkout", { method: "POST" });
+      const { data: { session } } = await createClient().auth.getSession();
+      const token = session?.access_token ?? "";
+      const res  = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json().catch(() => ({})) as { url?: string; error?: string };
       if (data.error) { setCheckoutError(data.error); return; }
       if (data.url)   { window.location.href = data.url; return; }

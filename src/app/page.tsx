@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import HubHeader from "@/components/HubHeader";
+import EcosystemCards from "@/components/EcosystemCards";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 
@@ -282,6 +283,7 @@ export default function ChatPage() {
             <span className="empty-sub" style={{ color: model.color }}>
               {model.name} · {model.skill}
             </span>
+            <EcosystemCards />
           </div>
         ) : (
           <>

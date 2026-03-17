@@ -99,6 +99,12 @@ const tools = [
       'Generate stunning images from text descriptions using Flux, one of the most capable text-to-image models available. Supports multiple aspect ratios and delivers professional-quality results in seconds.',
   },
   {
+    name: 'AI Logo Generator',
+    url: 'https://logo.deepvortexai.art',
+    description:
+      'Create professional AI-generated logos from text descriptions using Ideogram V2. Perfect for startups, brands, and creators who need unique, high-quality logo designs instantly.',
+  },
+  {
     name: 'AI Emoticon Generator',
     url: 'https://emoticons.deepvortexai.art',
     description:

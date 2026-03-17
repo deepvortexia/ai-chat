@@ -50,7 +50,7 @@ export function createClient(): SupabaseClient {
       auth: {
         storage: cookieStorage,
       },
-    } as Parameters<typeof createBrowserClient>[2]
+    } as any
   );
 
   return _client;

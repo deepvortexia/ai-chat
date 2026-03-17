@@ -17,6 +17,22 @@ export function createClient(): SupabaseClient {
 
   const domain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN; // ".deepvortexai.art"
 
+  const cookieStorage = {
+    getItem: (key: string) => {
+      if (typeof document === 'undefined') return null;
+      const match = document.cookie.match(new RegExp('(^| )' + key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]+)'));
+      return match ? decodeURIComponent(match[2]) : null;
+    },
+    setItem: (key: string, value: string) => {
+      if (typeof document === 'undefined') return;
+      document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=3600; secure; samesite=lax${domain ? `; domain=${domain}` : ''}`;
+    },
+    removeItem: (key: string) => {
+      if (typeof document === 'undefined') return;
+      document.cookie = `${key}=; path=/; max-age=0${domain ? `; domain=${domain}` : ''}`;
+    },
+  };
+
   _client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -31,7 +47,10 @@ export function createClient(): SupabaseClient {
           maxAge:   60 * 60 * 24 * 365, // 1 year
         } : {}),
       },
-    }
+      auth: {
+        storage: cookieStorage,
+      },
+    } as Parameters<typeof createBrowserClient>[2]
   );
 
   return _client;

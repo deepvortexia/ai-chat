@@ -39,6 +39,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "https://chat.deepvortexai.art/" },
   robots: { index: true, follow: true },
+  verification: { google: "76BAsq1e-Ol7tA8HmVLi9LgMDXpjyBIQvdAx6bZXF7Q" },
   other: {
     "theme-color": "#D4AF37",
     "revisit-after": "7 days",

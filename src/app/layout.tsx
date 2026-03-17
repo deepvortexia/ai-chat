@@ -38,8 +38,43 @@ export const metadata: Metadata = {
     "advanced reasoning AI",
   ],
   alternates: { canonical: "https://chat.deepvortexai.art/" },
+  robots: { index: true, follow: true },
+  other: {
+    "theme-color": "#D4AF37",
+    "revisit-after": "7 days",
+    "ai-content-declaration": "This page contains AI-generated content.",
+  },
+  openGraph: {
+    title: "Deep Vortex AI Chat | The Ultimate Multi-Model Conversational AI",
+    description:
+      "Experience the most powerful AI chat on the web. Elite reasoning, multiple LLM access, lightning-fast responses. Free and secure.",
+    url: "https://chat.deepvortexai.art/",
+    siteName: "Deep Vortex AI",
+    images: [
+      {
+        url: "https://chat.deepvortexai.art/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Deep Vortex AI Chat",
+      },
+    ],
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@deepvortexart",
+    creator: "@deepvortexart",
+    title: "Deep Vortex AI Chat | The Ultimate Multi-Model Conversational AI",
+    description:
+      "Elite multi-model AI chat with GPT, Claude, Gemini and more. Free, fast and powerful.",
+    images: ["https://chat.deepvortexai.art/og-image.png"],
+  },
   icons: {
-    icon: "https://chat.deepvortexai.art/favicon.ico?v=4",
+    icon: [
+      { url: "https://chat.deepvortexai.art/favicon.ico?v=4" },
+      { url: "https://chat.deepvortexai.art/favicon.svg?v=4", type: "image/svg+xml" },
+    ],
     apple: "https://chat.deepvortexai.art/apple-touch-icon.png?v=4",
   },
 };

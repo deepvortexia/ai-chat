@@ -20,17 +20,18 @@ export function createClient(): SupabaseClient {
   _client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    domain
-      ? {
-          cookieOptions: {
-            domain,
-            path:     "/",
-            sameSite: "lax" as const,
-            secure:   true,
-            maxAge:   60 * 60 * 24 * 365, // 1 year
-          },
-        }
-      : undefined
+    {
+      cookieOptions: {
+        name:    "deepvortex-auth",
+        ...(domain ? {
+          domain,
+          path:     "/",
+          sameSite: "lax" as const,
+          secure:   true,
+          maxAge:   60 * 60 * 24 * 365, // 1 year
+        } : {}),
+      },
+    }
   );
 
   return _client;

@@ -25,11 +25,11 @@ export function createClient(): SupabaseClient {
     },
     setItem: (key: string, value: string) => {
       if (typeof document === 'undefined') return;
-      document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=3600; secure; samesite=lax${domain ? `; domain=${domain}` : ''}`;
+      document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${60 * 60 * 24 * 365}; secure; samesite=lax${domain ? `; domain=${domain}` : ''}`;
     },
     removeItem: (key: string) => {
       if (typeof document === 'undefined') return;
-      document.cookie = `${key}=; path=/; max-age=0${domain ? `; domain=${domain}` : ''}`;
+      document.cookie = `${key}=; path=/; max-age=0; secure; samesite=lax${domain ? `; domain=${domain}` : ''}`;
     },
   };
 

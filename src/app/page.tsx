@@ -103,6 +103,7 @@ export default function ChatPage() {
       setShowPaywall(false);
       setShowMonthlyLimit(false);
       setError(null);
+      setActiveDrawer(null);
     }
   }, [session?.user?.id]);
 

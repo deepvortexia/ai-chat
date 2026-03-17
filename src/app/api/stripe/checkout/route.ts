@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "@/lib/supabase/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover",
 });
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.replace("Bearer ", "");
+  if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { createServiceClient } = await import("@/lib/supabase/server");
+  const supabase = createServiceClient();
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (!user || error) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const origin = req.headers.get("origin") ?? "https://chat.deepvortexai.art";
 

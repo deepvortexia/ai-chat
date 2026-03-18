@@ -87,7 +87,7 @@ export default function HubHeader({ onStatusChange }: Props) {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `https://deepvortexai.art/auth/callback`,
         queryParams: { prompt: "select_account" },
       },
     });
@@ -99,7 +99,7 @@ export default function HubHeader({ onStatusChange }: Props) {
     setSending(true); setAuthMsg("");
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: `https://deepvortexai.art/auth/callback` },
     });
     setSending(false);
     if (error) setAuthMsg(error.message);

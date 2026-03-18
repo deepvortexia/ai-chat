@@ -62,7 +62,8 @@ export function createClient(): SupabaseClient {
         } : {}),
       },
       auth: {
-        storage: cookieStorage,
+        storage:  cookieStorage,
+        flowType: "implicit",
       },
     } as any
   );

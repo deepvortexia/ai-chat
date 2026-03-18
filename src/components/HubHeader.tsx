@@ -87,7 +87,7 @@ export default function HubHeader({ onStatusChange }: Props) {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/confirm`,
+        redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: { prompt: "select_account" },
       },
     });
@@ -99,7 +99,7 @@ export default function HubHeader({ onStatusChange }: Props) {
     setSending(true); setAuthMsg("");
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
     setSending(false);
     if (error) setAuthMsg(error.message);

@@ -16,6 +16,7 @@ let _pkceCleanupDone = false;
 
 export function createClient(): SupabaseClient {
   const domain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN; // ".deepvortexai.art"
+  console.log("[supabase/client] NEXT_PUBLIC_COOKIE_DOMAIN =", domain);
 
   // One-time cleanup: remove stale PKCE code-verifier cookies left over from
   // before the implicit flow migration — they confuse the Supabase auth state machine.

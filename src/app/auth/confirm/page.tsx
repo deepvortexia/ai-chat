@@ -5,9 +5,10 @@
  *
  * With implicit flow the session arrives in the URL hash (#access_token=...).
  * The server never sees the hash, so this must be a client component.
- * Supabase (detectSessionInUrl default) parses the hash and fires SIGNED_IN
- * via onAuthStateChange — we wait for that event before redirecting so the
- * session cookie is guaranteed to be written first.
+ *
+ * @supabase/ssr's createBrowserClient does not auto-parse the hash — we must
+ * call getSession() explicitly to trigger hash extraction and cookie writing,
+ * then redirect once the session is confirmed.
  */
 
 import { useEffect, useState } from "react";
@@ -28,24 +29,37 @@ export default function AuthConfirmPage() {
 
     const supabase = createClient();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        subscription.unsubscribe();
-        clearTimeout(fallback);
-        window.location.replace("/");
+    const handleCallback = async () => {
+      // Explicitly call getSession() to trigger hash parsing and write the
+      // session cookie — createBrowserClient does not do this automatically.
+      const { data, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        setError(sessionError.message);
+        return;
       }
-    });
 
-    // Fallback: if SIGNED_IN never fires within 3s, redirect anyway
-    const fallback = setTimeout(() => {
-      subscription.unsubscribe();
-      window.location.replace("/");
-    }, 3000);
+      if (data.session) {
+        window.location.replace("/");
+        return;
+      }
 
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(fallback);
+      // Hash not yet parsed — wait for SIGNED_IN as a fallback
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_IN" && session) {
+          subscription.unsubscribe();
+          window.location.replace("/");
+        }
+      });
+
+      // Last-resort redirect after 3s
+      setTimeout(() => {
+        subscription.unsubscribe();
+        window.location.replace("/");
+      }, 3000);
     };
+
+    handleCallback();
   }, []);
 
   if (error) {

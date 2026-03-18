@@ -3,12 +3,12 @@
 /**
  * Implicit-flow OAuth callback page.
  *
- * With implicit flow the session arrives in the URL hash (#access_token=...).
- * The server never sees the hash, so this must be a client component.
+ * With implicit flow Supabase returns tokens in the URL hash:
+ *   #access_token=...&refresh_token=...&token_type=bearer
  *
- * @supabase/ssr's createBrowserClient does not auto-parse the hash — we must
- * call getSession() explicitly to trigger hash extraction and cookie writing,
- * then redirect once the session is confirmed.
+ * @supabase/ssr with a custom storage does NOT auto-parse the hash.
+ * We extract the tokens manually and call setSession() to write them
+ * to the .deepvortexai.art cookie before redirecting home.
  */
 
 import { useEffect, useState } from "react";
@@ -30,33 +30,40 @@ export default function AuthConfirmPage() {
     const supabase = createClient();
 
     const handleCallback = async () => {
-      // Explicitly call getSession() to trigger hash parsing and write the
-      // session cookie — createBrowserClient does not do this automatically.
-      const { data, error: sessionError } = await supabase.auth.getSession();
+      // Parse the URL hash manually — createBrowserClient with custom storage
+      // does not do this automatically.
+      const hash = window.location.hash.slice(1); // strip leading #
+      const params = new URLSearchParams(hash);
+      const accessToken  = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
 
-      if (sessionError) {
-        setError(sessionError.message);
-        return;
-      }
-
-      if (data.session) {
+      if (accessToken && refreshToken) {
+        // Write the session into the custom cookie storage
+        const { error: setError } = await supabase.auth.setSession({
+          access_token:  accessToken,
+          refresh_token: refreshToken,
+        });
+        if (setError) {
+          setError(setError.message);
+          return;
+        }
         window.location.replace("/");
         return;
       }
 
-      // Hash not yet parsed — wait for SIGNED_IN as a fallback
+      // No hash tokens — check if a session already exists (e.g. cross-subdomain cookie)
+      const { data, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) { setError(sessionError.message); return; }
+      if (data.session)  { window.location.replace("/"); return; }
+
+      // Last resort: wait for SIGNED_IN then redirect, with 3s hard fallback
       const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
         if (event === "SIGNED_IN" && session) {
           subscription.unsubscribe();
           window.location.replace("/");
         }
       });
-
-      // Last-resort redirect after 3s
-      setTimeout(() => {
-        subscription.unsubscribe();
-        window.location.replace("/");
-      }, 3000);
+      setTimeout(() => { subscription.unsubscribe(); window.location.replace("/"); }, 3000);
     };
 
     handleCallback();

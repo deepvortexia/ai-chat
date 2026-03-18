@@ -54,6 +54,6 @@ export const config = {
      * Run on all routes except Next.js internals and static assets.
      * This ensures sessions are refreshed before every page and API call.
      */
-    "/((?!_next/static|_next/image|favicon.ico|logo\\.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|logo\\.png|auth/confirm|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

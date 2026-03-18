@@ -18,14 +18,23 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/";
 
+  console.log("[auth/callback] code:", code ? `${code.slice(0, 12)}…` : "null");
+
   if (code) {
     const cookieStore  = await cookies();
     const cookieDomain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN;
+
+    const allCookies = cookieStore.getAll();
+    console.log("[auth/callback] cookies received:", allCookies.map((c) => c.name));
+
+    const verifierCookie = allCookies.find((c) => c.name.includes("code-verifier"));
+    console.log("[auth/callback] verifier cookie:", verifierCookie?.name ?? "NOT FOUND");
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
+        cookieOptions: { name: "deepvortex-auth" },
         cookies: {
           getAll() { return cookieStore.getAll(); },
           setAll(cookiesToSet) {
@@ -42,6 +51,7 @@ export async function GET(request: NextRequest) {
     );
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+    console.log("[auth/callback] exchangeCodeForSession error:", error?.message ?? "none");
 
     if (!error) {
       // Auto-create the profile row for new users so message_count is always

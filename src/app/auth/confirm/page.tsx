@@ -39,12 +39,12 @@ export default function AuthConfirmPage() {
 
       if (accessToken && refreshToken) {
         // Write the session into the custom cookie storage
-        const { error: setError } = await supabase.auth.setSession({
+        const { error: setSessionError } = await supabase.auth.setSession({
           access_token:  accessToken,
           refresh_token: refreshToken,
         });
-        if (setError) {
-          setError(setError.message);
+        if (setSessionError) {
+          setError(setSessionError.message);
           return;
         }
         window.location.replace("/");

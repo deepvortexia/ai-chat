@@ -12,10 +12,24 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  */
 let _client: SupabaseClient | null = null;
 
-export function createClient(): SupabaseClient {
-  if (_client) return _client;
+let _pkceCleanupDone = false;
 
+export function createClient(): SupabaseClient {
   const domain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN; // ".deepvortexai.art"
+
+  // One-time cleanup: remove stale PKCE code-verifier cookies left over from
+  // before the implicit flow migration — they confuse the Supabase auth state machine.
+  if (!_pkceCleanupDone && typeof document !== 'undefined') {
+    document.cookie.split(';').forEach((c) => {
+      const name = c.trim().split('=')[0];
+      if (name.includes('code-verifier')) {
+        document.cookie = `${name}=; path=/; max-age=0; secure; samesite=lax${domain ? `; domain=${domain}` : ''}`;
+      }
+    });
+    _pkceCleanupDone = true;
+  }
+
+  if (_client) return _client;
 
   const cookieStorage = {
     getItem: (key: string) => {

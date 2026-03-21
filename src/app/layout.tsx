@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     "chatbot online",
     "advanced reasoning AI",
   ],
-  alternates: { canonical: "https://chat.deepvortexai.art/" },
+  alternates: { canonical: "https://chat.deepvortexai.com/" },
   robots: { index: true, follow: true },
   verification: { google: "76BAsq1e-Ol7tA8HmVLi9LgMDXpjyBIQvdAx6bZXF7Q" },
   other: {
@@ -49,11 +49,11 @@ export const metadata: Metadata = {
     title: "Deep Vortex AI Chat | The Ultimate Multi-Model Conversational AI",
     description:
       "Experience the most powerful AI chat on the web. Elite reasoning, multiple LLM access, lightning-fast responses. Free and secure.",
-    url: "https://chat.deepvortexai.art/",
+    url: "https://chat.deepvortexai.com/",
     siteName: "Deep Vortex AI",
     images: [
       {
-        url: "https://chat.deepvortexai.art/og-image.png",
+        url: "https://chat.deepvortexai.com/og-image.png",
         width: 1200,
         height: 630,
         alt: "Deep Vortex AI Chat",
@@ -69,14 +69,14 @@ export const metadata: Metadata = {
     title: "Deep Vortex AI Chat | The Ultimate Multi-Model Conversational AI",
     description:
       "Elite multi-model AI chat with GPT, Claude, Gemini and more. Free, fast and powerful.",
-    images: ["https://chat.deepvortexai.art/og-image.png"],
+    images: ["https://chat.deepvortexai.com/og-image.png"],
   },
   icons: {
     icon: [
-      { url: "https://chat.deepvortexai.art/favicon.ico?v=4" },
-      { url: "https://chat.deepvortexai.art/favicon.svg?v=4", type: "image/svg+xml" },
+      { url: "https://chat.deepvortexai.com/favicon.ico?v=4" },
+      { url: "https://chat.deepvortexai.com/favicon.svg?v=4", type: "image/svg+xml" },
     ],
-    apple: "https://chat.deepvortexai.art/apple-touch-icon.png?v=4",
+    apple: "https://chat.deepvortexai.com/apple-touch-icon.png?v=4",
   },
 };
 
@@ -92,7 +92,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Deep Vortex AI Chat",
-  "url": "https://chat.deepvortexai.art/",
+  "url": "https://chat.deepvortexai.com/",
   "applicationCategory": "AIApplication",
   "operatingSystem": "Web",
   "description": "Multi-model AI chat platform with GPT-5, Claude 4.5, Gemini 2.5 Flash, and DeepSeek v3.1. Elite reasoning, lightning-fast responses, free and secure.",
@@ -104,7 +104,7 @@ const jsonLd = {
   "author": {
     "@type": "Organization",
     "name": "Deep Vortex AI",
-    "url": "https://deepvortexai.art",
+    "url": "https://deepvortexai.com",
   },
 };
 

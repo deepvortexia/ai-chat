@@ -6,17 +6,16 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * instance, so there is only one in-memory session cache and one
  * onAuthStateChange event bus for the whole browser tab.
  *
- * Cookie domain is set to NEXT_PUBLIC_COOKIE_DOMAIN (.deepvortexai.art) so
- * auth cookies are readable by all subdomains.  A login on deepvortexai.art
- * (Hub) is therefore automatically visible on chat.deepvortexai.art.
+ * Cookie domain is set to NEXT_PUBLIC_COOKIE_DOMAIN (.deepvortexai.com) so
+ * auth cookies are readable by all subdomains.  A login on deepvortexai.com
+ * (Hub) is therefore automatically visible on chat.deepvortexai.com.
  */
 let _client: SupabaseClient | null = null;
 
 let _pkceCleanupDone = false;
 
 export function createClient(): SupabaseClient {
-  const domain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN; // ".deepvortexai.art"
-  console.log("[supabase/client] NEXT_PUBLIC_COOKIE_DOMAIN =", domain);
+  const domain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN; // ".deepvortexai.com"
 
   // One-time cleanup: remove stale PKCE code-verifier cookies left over from
   // before the implicit flow migration — they confuse the Supabase auth state machine.

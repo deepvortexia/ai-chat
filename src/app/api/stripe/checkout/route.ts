@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const { data: { user }, error } = await supabase.auth.getUser(token);
   if (!user || error) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const origin = req.headers.get("origin") ?? "https://chat.deepvortexai.art";
+  const origin = req.headers.get("origin") ?? "https://chat.deepvortexai.com";
 
   try {
     const session = await stripe.checkout.sessions.create({

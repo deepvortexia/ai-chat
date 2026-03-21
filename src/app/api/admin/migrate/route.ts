@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
  * Protected by SUPABASE_SERVICE_ROLE_KEY as bearer token.
  *
  * Call once after deploy:
- *   curl -X POST https://chat.deepvortexai.art/api/admin/migrate \
+ *   curl -X POST https://chat.deepvortexai.com/api/admin/migrate \
  *     -H "Authorization: Bearer <SUPABASE_SERVICE_ROLE_KEY>"
  */
 export async function POST(req: NextRequest) {

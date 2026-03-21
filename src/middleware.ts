@@ -6,7 +6,7 @@ import { NextResponse, type NextRequest } from "next/server";
  *  - Server components always see a valid session
  *  - Expired tokens are silently refreshed before they hit an API route
  *
- * Cookies are written with NEXT_PUBLIC_COOKIE_DOMAIN (e.g. ".deepvortexai.art")
+ * Cookies are written with NEXT_PUBLIC_COOKIE_DOMAIN (e.g. ".deepvortexai.com")
  * so the same session is shared across all subdomains.
  */
 export async function middleware(request: NextRequest) {

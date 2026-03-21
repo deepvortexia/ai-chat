@@ -8,7 +8,7 @@
  *
  * Cross-subdomain detection: a visibilitychange listener re-reads the session
  * from cookies whenever the tab regains focus.  If the user logged in on
- * deepvortexai.art (Hub) and then switches to this tab, the .deepvortexai.art
+ * deepvortexai.com (Hub) and then switches to this tab, the .deepvortexai.com
  * cookie is found and the chat unlocks without a second login.
  */
 
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
 
     // 1. Read the session cookie immediately on mount.
-    //    If the Hub wrote a .deepvortexai.art cookie before this tab opened,
+    //    If the Hub wrote a .deepvortexai.com cookie before this tab opened,
     //    it is found here and the user is auto-logged in with no second prompt.
     checkSession();
 

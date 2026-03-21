@@ -1,16 +1,16 @@
 'use client'
 
 const tools = [
-  { name: 'Emoticons',     icon: '😃', desc: 'Custom emoji creation',        href: 'https://emoticons.deepvortexai.art', isCurrent: false },
-  { name: 'Image Gen',     icon: '🎨', desc: 'AI artwork',                   href: 'https://images.deepvortexai.art',    isCurrent: false },
-  { name: 'Logo Gen',      icon: '🛡️', desc: 'AI logo creation',             href: 'https://logo.deepvortexai.art',      isCurrent: false },
-  { name: 'Avatar Gen',    icon: '🎭', desc: 'AI portrait styles',            href: 'https://avatar.deepvortexai.art',    isCurrent: false },
-  { name: 'Remove BG',     icon: '✂️', desc: 'Remove backgrounds instantly',  href: 'https://bgremover.deepvortexai.art', isCurrent: false },
-  { name: 'Upscaler',      icon: '🔍', desc: 'Upscale images up to 4x',       href: 'https://upscaler.deepvortexai.art',  isCurrent: false },
-  { name: '3D Generator',  icon: '🧊', desc: 'Image to 3D model',             href: 'https://3d.deepvortexai.art',        isCurrent: false },
-  { name: 'Voice Gen',     icon: '🎙️', desc: 'AI Voice Generator',            href: 'https://voice.deepvortexai.art',     isCurrent: false },
-  { name: 'Image → Video', icon: '🎬', desc: 'Animate images with AI',        href: 'https://video.deepvortexai.art',     isCurrent: false },
-  { name: 'AI Chat',       icon: '💬', desc: '4 frontier AI models',          href: 'https://chat.deepvortexai.art',      isCurrent: true  },
+  { name: 'Emoticons',     icon: '😃', desc: 'Custom emoji creation',        href: 'https://emoticons.deepvortexai.com', isCurrent: false },
+  { name: 'Image Gen',     icon: '🎨', desc: 'AI artwork',                   href: 'https://images.deepvortexai.com',    isCurrent: false },
+  { name: 'Logo Gen',      icon: '🛡️', desc: 'AI logo creation',             href: 'https://logo.deepvortexai.com',      isCurrent: false },
+  { name: 'Avatar Gen',    icon: '🎭', desc: 'AI portrait styles',            href: 'https://avatar.deepvortexai.com',    isCurrent: false },
+  { name: 'Remove BG',     icon: '✂️', desc: 'Remove backgrounds instantly',  href: 'https://bgremover.deepvortexai.com', isCurrent: false },
+  { name: 'Upscaler',      icon: '🔍', desc: 'Upscale images up to 4x',       href: 'https://upscaler.deepvortexai.com',  isCurrent: false },
+  { name: '3D Generator',  icon: '🧊', desc: 'Image to 3D model',             href: 'https://3d.deepvortexai.com',        isCurrent: false },
+  { name: 'Voice Gen',     icon: '🎙️', desc: 'AI Voice Generator',            href: 'https://voice.deepvortexai.com',     isCurrent: false },
+  { name: 'Image → Video', icon: '🎬', desc: 'Animate images with AI',        href: 'https://video.deepvortexai.com',     isCurrent: false },
+  { name: 'AI Chat',       icon: '💬', desc: '4 frontier AI models',          href: 'https://chat.deepvortexai.com',      isCurrent: true  },
 ]
 
 export default function EcosystemCards() {

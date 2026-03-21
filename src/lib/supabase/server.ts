@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 /**
  * Merge the shared-domain option into every cookie Supabase writes.
- * When NEXT_PUBLIC_COOKIE_DOMAIN = ".deepvortexai.art", the session cookie
+ * When NEXT_PUBLIC_COOKIE_DOMAIN = ".deepvortexai.com", the session cookie
  * is accessible to all subdomains so a login on any subdomain is recognized
  * everywhere without a second sign-in.
  */

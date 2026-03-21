@@ -15,7 +15,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
  *  - customer.subscription.deleted   → deactivate subscription
  *
  * Register this URL in the Stripe dashboard:
- *   https://chat.deepvortexai.art/api/stripe/webhook
+ *   https://chat.deepvortexai.com/api/stripe/webhook
  */
 export async function POST(req: NextRequest) {
   const body = await req.text();

@@ -8,7 +8,7 @@
  *
  * @supabase/ssr with a custom storage does NOT auto-parse the hash.
  * We extract the tokens manually and call setSession() to write them
- * to the .deepvortexai.art cookie before redirecting home.
+ * to the .deepvortexai.com cookie before redirecting home.
  */
 
 import { useEffect, useState } from "react";

@@ -142,7 +142,7 @@ export default function HubHeader({ onStatusChange }: Props) {
         <p className="hub-tagline">4 frontier models · one subscription</p>
 
         <div className="pills-row">
-          <a href="https://deepvortexai.art" className="hub-pill clickable" style={{ textDecoration: "none" }}>
+          <a href="https://deepvortexai.com" className="hub-pill clickable" style={{ textDecoration: "none" }}>
             <span className="pill-icon">🏠</span><span>Hub</span>
           </a>
 

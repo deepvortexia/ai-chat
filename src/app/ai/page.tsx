@@ -17,12 +17,12 @@ export const metadata: Metadata = {
     'AI emoticon generator',
     'free AI tools 2026',
   ],
-  alternates: { canonical: 'https://chat.deepvortexai.art/ai' },
+  alternates: { canonical: 'https://chat.deepvortexai.com/ai' },
   openGraph: {
     title: 'All Deep Vortex AI Tools — 9 Free AI Creative Tools',
     description:
       'One account gives you access to 9 powerful AI tools: image generation, avatar creation, voice synthesis, 3D modeling, and more.',
-    url: 'https://chat.deepvortexai.art/ai',
+    url: 'https://chat.deepvortexai.com/ai',
     siteName: 'Deep Vortex AI',
     type: 'website',
   },
@@ -39,16 +39,16 @@ const jsonLd = {
   '@graph': [
     {
       '@type': 'WebPage',
-      '@id': 'https://chat.deepvortexai.art/ai',
-      url: 'https://chat.deepvortexai.art/ai',
+      '@id': 'https://chat.deepvortexai.com/ai',
+      url: 'https://chat.deepvortexai.com/ai',
       name: 'All Deep Vortex AI Tools',
       description:
         'Complete guide to all 9 Deep Vortex AI creative tools — image generation, avatars, voice, 3D, video, chat, and more.',
-      isPartOf: { '@id': 'https://deepvortexai.art' },
+      isPartOf: { '@id': 'https://deepvortexai.com' },
       publisher: {
         '@type': 'Organization',
         name: 'Deep Vortex AI',
-        url: 'https://deepvortexai.art',
+        url: 'https://deepvortexai.com',
       },
     },
     {
@@ -67,7 +67,7 @@ const jsonLd = {
           name: 'Do I need separate accounts for each Deep Vortex AI tool?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'No. One Deep Vortex AI account gives you access to all 9 tools. Sign in once at deepvortexai.art and your account, credits, and favorites are shared across the entire ecosystem.',
+            text: 'No. One Deep Vortex AI account gives you access to all 9 tools. Sign in once at deepvortexai.com and your account, credits, and favorites are shared across the entire ecosystem.',
           },
         },
         {
@@ -94,61 +94,61 @@ const jsonLd = {
 const tools = [
   {
     name: 'AI Image Generator',
-    url: 'https://images.deepvortexai.art',
+    url: 'https://images.deepvortexai.com',
     description:
       'Generate stunning images from text descriptions using Flux, one of the most capable text-to-image models available. Supports multiple aspect ratios and delivers professional-quality results in seconds.',
   },
   {
     name: 'AI Logo Generator',
-    url: 'https://logo.deepvortexai.art',
+    url: 'https://logo.deepvortexai.com',
     description:
       'Create professional AI-generated logos from text descriptions using Ideogram V2. Perfect for startups, brands, and creators who need unique, high-quality logo designs instantly.',
   },
   {
     name: 'AI Emoticon Generator',
-    url: 'https://emoticons.deepvortexai.art',
+    url: 'https://emoticons.deepvortexai.com',
     description:
       'Create custom AI-powered emoticons and emoji from any text prompt in seconds. Perfect for streamers, Discord servers, brands, and social media creators who want unique, expressive icons.',
   },
   {
     name: 'AI Background Remover',
-    url: 'https://bgremover.deepvortexai.art',
+    url: 'https://bgremover.deepvortexai.com',
     description:
       'Remove image backgrounds instantly with AI precision, producing clean transparent PNGs ready for any use case. Ideal for product photography, social media graphics, and design work.',
   },
   {
     name: 'AI Image Upscaler',
-    url: 'https://upscaler.deepvortexai.art',
+    url: 'https://upscaler.deepvortexai.com',
     description:
       'Upscale images up to 4x their original resolution while preserving and enhancing detail. Restore old photos, improve AI-generated art, or prepare assets for print-quality output.',
   },
   {
     name: 'AI 3D Model Generator',
-    url: 'https://3d.deepvortexai.art',
+    url: 'https://3d.deepvortexai.com',
     description:
       'Transform a single photo or image into a downloadable 3D model in GLB format using AI. Useful for game developers, 3D artists, product visualization, and augmented reality projects.',
   },
   {
     name: 'AI Voice Generator',
-    url: 'https://voice.deepvortexai.art',
+    url: 'https://voice.deepvortexai.com',
     description:
       'Convert text to realistic AI-generated speech across multiple voices, languages, and styles. Great for voiceovers, podcasts, e-learning content, and accessibility features.',
   },
   {
     name: 'AI Image to Video',
-    url: 'https://video.deepvortexai.art',
+    url: 'https://video.deepvortexai.com',
     description:
       'Animate any image into a short AI-generated video with natural motion and cinematic quality. Bring artwork, product shots, and portraits to life for social media and creative projects.',
   },
   {
     name: 'AI Avatar Generator',
-    url: 'https://avatar.deepvortexai.art',
+    url: 'https://avatar.deepvortexai.com',
     description:
       'Transform your photo into a stunning AI avatar in dozens of styles — Cyberpunk, Anime, Pixar, Dark Fantasy, and more — powered by Flux Kontext Pro. Perfect for profile pictures, gaming personas, and branded identities.',
   },
   {
     name: 'AI Chat',
-    url: 'https://chat.deepvortexai.art',
+    url: 'https://chat.deepvortexai.com',
     description:
       'Chat with multiple leading AI models — including GPT, Claude, Gemini, and DeepSeek — through a single interface. Get elite reasoning, fast responses, and multi-model flexibility for any task.',
   },
@@ -223,7 +223,7 @@ export default function AIToolsPage() {
           {[
             {
               q: 'Do I need separate accounts for each tool?',
-              a: 'No. One Deep Vortex AI account gives you access to all 9 tools. Sign in once at deepvortexai.art and your credits and favorites are shared across every tool.',
+              a: 'No. One Deep Vortex AI account gives you access to all 9 tools. Sign in once at deepvortexai.com and your credits and favorites are shared across every tool.',
             },
             {
               q: 'Are the tools free to use?',
@@ -242,7 +242,7 @@ export default function AIToolsPage() {
         </section>
 
         <footer style={{ textAlign: 'center', borderTop: '1px solid rgba(212,175,55,0.1)', paddingTop: '2rem' }}>
-          <a href="https://deepvortexai.art" style={{
+          <a href="https://deepvortexai.com" style={{
             display: 'inline-block',
             padding: '0.75rem 2rem',
             background: 'linear-gradient(135deg, #B8860B, #D4AF37)',

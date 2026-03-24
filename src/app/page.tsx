@@ -131,7 +131,12 @@ export default function ChatPage() {
 
   async function startCheckout() {
     try {
-      const res  = await fetch("/api/stripe/checkout", { method: "POST" });
+      const { data: { session: stripeSession } } = await supabase.auth.getSession();
+      const token = stripeSession?.access_token ?? "";
+      const res  = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json().catch(() => ({})) as { url?: string; error?: string };
       if (data.error) { setError(data.error); return; }
       if (data.url)   { window.location.href = data.url; return; }

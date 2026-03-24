@@ -49,3 +49,4 @@ User-agent: Bytespider
 Allow: /
 
 Sitemap: https://chat.deepvortexai.com/sitemap.xml
+Sitemap: https://chat.deepvortexai.com/llms.txt

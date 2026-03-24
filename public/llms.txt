@@ -1,0 +1,18 @@
+# Deep Vortex AI
+> 10 powerful AI creative tools in one platform.
+
+## Tools
+- [Image Generator](https://images.deepvortexai.com): AI images from text
+- [Emoticon Generator](https://emoticons.deepvortexai.com): Custom AI emoji
+- [Avatar Generator](https://avatar.deepvortexai.com): AI portrait styles
+- [Voice Generator](https://voice.deepvortexai.com): Text to speech
+- [Image to Video](https://video.deepvortexai.com): Animate images
+- [Background Remover](https://bgremover.deepvortexai.com): Remove backgrounds
+- [Image Upscaler](https://upscaler.deepvortexai.com): Enhance resolution 4x
+- [3D Generator](https://3d.deepvortexai.com): Images to 3D models
+- [Logo Generator](https://logo.deepvortexai.com): AI logos
+- [AI Chat](https://chat.deepvortexai.com): GPT, Claude, Gemini, DeepSeek
+
+## Links
+- https://chat.deepvortexai.com
+- https://chat.deepvortexai.com/blog

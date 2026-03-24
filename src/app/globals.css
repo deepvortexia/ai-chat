@@ -392,7 +392,7 @@ body {
   filter: drop-shadow(0 0 6px rgba(212,175,55,0.8));
 }
 .nav-icon  { font-size: 1.6rem; line-height: 1; }
-.nav-label { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.7px; text-transform: uppercase; }
+.nav-label { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.7px; text-transform: uppercase; }
 
 /* ── Drawer backdrop ─────────────────────────────────────────────────────── */
 .drawer-backdrop {

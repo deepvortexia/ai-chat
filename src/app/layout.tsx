@@ -93,6 +93,7 @@ const jsonLd = {
   "@type": "SoftwareApplication",
   "name": "Deep Vortex AI Chat",
   "url": "https://chat.deepvortexai.com/",
+  "image": "https://chat.deepvortexai.com/og-image.png",
   "applicationCategory": "AIApplication",
   "operatingSystem": "Web",
   "description": "Multi-model AI chat platform with GPT-5, Claude 4.5, Gemini 2.5 Flash, and DeepSeek v3.1. Elite reasoning, lightning-fast responses, free and secure.",
@@ -106,6 +107,13 @@ const jsonLd = {
     "name": "Deep Vortex AI",
     "url": "https://deepvortexai.com",
   },
+  "featureList": [
+    "Multi-Model AI Chat",
+    "GPT, Claude, Gemini, DeepSeek Access",
+    "Free to Use",
+    "Secure and Private",
+    "Lightning-Fast Responses",
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

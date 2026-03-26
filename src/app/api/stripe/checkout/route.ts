@@ -6,6 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(req: NextRequest) {
+  console.log("[stripe/checkout] STRIPE_PRICE_ID:", process.env.STRIPE_PRICE_ID);
   const authHeader = req.headers.get("authorization");
   const token = authHeader?.replace("Bearer ", "");
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

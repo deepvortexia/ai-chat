@@ -151,7 +151,7 @@ export default function HubHeader({ onStatusChange }: Props) {
             isSubscribed ? (
               <div className="hub-pill credits-pill">
                 <span className="pill-icon">✦</span>
-                <span>Unlimited Access</span>
+                <span>Deep Chat Access</span>
               </div>
             ) : (
               <div className="hub-pill" style={{ borderColor: "rgba(212,175,55,0.3)", color: "rgba(212,175,55,0.6)" }}>
@@ -176,7 +176,7 @@ export default function HubHeader({ onStatusChange }: Props) {
                 style={checkoutLoading ? { opacity: 0.6, cursor: "wait" } : undefined}
               >
                 <span className="pill-icon">⚡</span>
-                <span>{checkoutLoading ? "Redirecting…" : "Get Unlimited Access — $6.99/mo"}</span>
+                <span>{checkoutLoading ? "Redirecting…" : "Get Deep Chat Access — $9.99/mo"}</span>
               </button>
               {checkoutError && (
                 <p style={{ fontSize: "0.72rem", color: "#f87171", margin: "0.2rem 0 0", textAlign: "center", width: "100%" }}>

@@ -78,7 +78,7 @@ export const AI_MODELS: Record<string, AIModel> = {
 };
 
 export const MONTHLY_MESSAGE_LIMIT = 400;
-export const SUBSCRIPTION_PRICE_USD = 5.99;
+export const SUBSCRIPTION_PRICE_USD = 9.99;
 
 /** Convert a messages array into a single prompt string for Replicate models. */
 export function formatMessagesAsPrompt(

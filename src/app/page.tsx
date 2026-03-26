@@ -500,7 +500,7 @@ export default function ChatPage() {
                 fontWeight: 700, fontSize: "0.95rem", cursor: "pointer", marginBottom: "0.75rem",
               }}
             >
-              ⚡ Get Unlimited Access — $6.99/mo
+              ⚡ Get Deep Chat Access — $9.99/mo
             </button>
             <p style={{ fontSize: "0.7rem", color: "rgba(212,175,55,0.35)" }}>
               Cancel anytime · Instant access after payment

@@ -26,16 +26,18 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Deep Vortex AI Chat | The Ultimate Multi-Model Conversational AI",
+  title: "AI Chat Free Online — GPT-5, Claude, Gemini & DeepSeek in One | Deep Vortex AI",
   description:
-    "Experience the most powerful AI chat on the web. Deep Vortex AI delivers elite reasoning, multiple LLM access, and lightning-fast responses. Free, secure, and advanced.",
+    "Chat with GPT-5, Claude 4.5, Gemini 2.5 and DeepSeek v3 in one platform. Free AI chat online, no signup required. Elite reasoning, fast responses. Part of Deep Vortex AI.",
   keywords: [
-    "best AI chat 2026",
-    "Deep Vortex AI",
-    "premium AI assistant",
-    "multi-model AI",
-    "chatbot online",
-    "advanced reasoning AI",
+    "AI chat free online",
+    "GPT-5 free alternative",
+    "Claude AI chat free",
+    "Gemini chat free online",
+    "multi model AI chat no signup",
+    "best AI chatbot 2026 free",
+    "Deep Vortex AI chat",
+    "free AI assistant online no account",
   ],
   alternates: { canonical: "https://chat.deepvortexai.com/" },
   robots: { index: true, follow: true },
@@ -46,9 +48,9 @@ export const metadata: Metadata = {
     "ai-content-declaration": "This page contains AI-generated content.",
   },
   openGraph: {
-    title: "Deep Vortex AI Chat | The Ultimate Multi-Model Conversational AI",
+    title: "AI Chat Free Online — GPT-5, Claude, Gemini & DeepSeek in One | Deep Vortex AI",
     description:
-      "Experience the most powerful AI chat on the web. Elite reasoning, multiple LLM access, lightning-fast responses. Free and secure.",
+      "Chat with GPT-5, Claude 4.5, Gemini 2.5 and DeepSeek v3 in one platform. Free AI chat online, no signup required. Elite reasoning, fast responses. Part of Deep Vortex AI.",
     url: "https://chat.deepvortexai.com/",
     siteName: "Deep Vortex AI",
     images: [
@@ -66,9 +68,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@deepvortexart",
     creator: "@deepvortexart",
-    title: "Deep Vortex AI Chat | The Ultimate Multi-Model Conversational AI",
+    title: "AI Chat Free Online — GPT-5, Claude, Gemini & DeepSeek in One | Deep Vortex AI",
     description:
-      "Elite multi-model AI chat with GPT, Claude, Gemini and more. Free, fast and powerful.",
+      "Chat with GPT-5, Claude 4.5, Gemini 2.5 and DeepSeek v3 in one platform. Free AI chat online, no signup required. Elite reasoning, fast responses. Part of Deep Vortex AI.",
     images: ["https://chat.deepvortexai.com/og-image.png"],
   },
   icons: {

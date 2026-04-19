@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     siteName: "Deep Vortex AI",
     images: [
       {
-        url: "https://chat.deepvortexai.com/og-image.png",
+        url: "/og-image.webp",
         width: 1200,
         height: 630,
         alt: "Deep Vortex AI Chat",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     title: "AI Chat Free Online — GPT-5, Claude, Gemini & DeepSeek in One | Deep Vortex AI",
     description:
       "Chat with GPT-5, Claude 4.5, Gemini 2.5 and DeepSeek v3 in one platform. Free AI chat online, no signup required. Elite reasoning, fast responses. Part of Deep Vortex AI.",
-    images: ["https://chat.deepvortexai.com/og-image.png"],
+    images: ["/og-image.webp"],
   },
   icons: {
     icon: [
@@ -95,7 +95,7 @@ const jsonLd = {
   "@type": "SoftwareApplication",
   "name": "Deep Vortex AI Chat",
   "url": "https://chat.deepvortexai.com/",
-  "image": "https://chat.deepvortexai.com/og-image.png",
+  "image": "/og-image.webp",
   "applicationCategory": "AIApplication",
   "operatingSystem": "Web",
   "description": "Multi-model AI chat platform with GPT-5, Claude 4.5, Gemini 2.5 Flash, and DeepSeek v3.1. Elite reasoning, lightning-fast responses, free and secure.",
